@@ -1,0 +1,281 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #0A0A0B;
+  --bg-secondary: #1A1A1C;
+  --bg-tertiary: #2A2A2E;
+
+  --soft-cream: #F5F4F0;
+  --soft-warm-gray: #C4C2B8;
+  --soft-coral: #E85A4F;
+  --soft-charcoal: #2D2D2A;
+
+  --neon-pink: #FF6B9D;
+  --neon-pink-glow: rgba(255, 107, 157, 0.2);
+  --neon-blue: #4ECDC4;
+  --neon-blue-glow: rgba(78, 205, 196, 0.2);
+  --neon-purple: #A8E6CF;
+  --neon-purple-glow: rgba(168, 230, 207, 0.2);
+}
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-primary) 100%);
+  min-height: 100vh;
+  color: var(--soft-cream);
+  overflow-x: hidden;
+}
+
+@keyframes gradient-flow {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+.gradient-text {
+  background: linear-gradient(
+    45deg,
+    var(--soft-cream),
+    var(--neon-blue),
+    var(--neon-pink),
+    var(--neon-purple),
+    var(--soft-cream)
+  );
+  background-size: 300% 300%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradient-flow 6s ease infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 
+      0 0 20px var(--neon-pink-glow),
+      0 0 40px var(--neon-pink-glow),
+      0 0 60px var(--neon-pink-glow);
+  }
+  50% {
+    box-shadow: 
+      0 0 30px var(--neon-blue-glow),
+      0 0 60px var(--neon-blue-glow),
+      0 0 90px var(--neon-blue-glow);
+  }
+}
+
+@keyframes glow-soft {
+  0%, 100% {
+    box-shadow: 0 0 20px var(--neon-pink-glow);
+  }
+  50% {
+    box-shadow: 0 0 30px var(--neon-blue-glow);
+  }
+}
+
+.glow-effect {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+.glow-soft {
+  animation: glow-soft 4s ease-in-out infinite;
+}
+
+@keyframes float-up {
+  0% {
+    transform: translateY(100vh) scale(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes float-diagonal {
+  0% {
+    transform: translate(-100px, 100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.7;
+  }
+  90% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(100px, -100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.ambient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(1px);
+  animation: float-up 15s linear infinite;
+}
+
+.ambient-orb-diagonal {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(2px);
+  animation: float-diagonal 20s linear infinite;
+}
+@keyframes card-hover-glow {
+  0% {
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.1),
+      0 0 0 var(--neon-pink-glow);
+  }
+  100% {
+    box-shadow: 
+      0 20px 40px rgba(0, 0, 0, 0.2),
+      0 0 30px var(--neon-pink-glow),
+      0 0 60px var(--neon-pink-glow);
+  }
+}
+
+.card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.card-hover:hover {
+  transform: translateY(-8px) scale(1.02);
+  animation: card-hover-glow 0.3s ease-out forwards;
+}
+@keyframes button-pulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--neon-pink-glow);
+  }
+  70% {
+    box-shadow: 0 0 0 20px rgba(255, 107, 157, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 107, 157, 0);
+  }
+}
+
+.button-primary {
+  background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue));
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease infinite;
+  transition: all 0.3s ease;
+}
+
+.button-primary:hover {
+  animation: button-pulse 1.5s infinite;
+  transform: scale(1.05);
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+.typing-cursor {
+  animation: blink 1s infinite;
+}
+@keyframes count-up {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes number-glow {
+  0%, 100% {
+    text-shadow: 
+      0 0 10px var(--neon-blue-glow),
+      0 0 20px var(--neon-blue-glow);
+  }
+  50% {
+    text-shadow: 
+      0 0 20px var(--neon-pink-glow),
+      0 0 30px var(--neon-pink-glow);
+  }
+}
+
+.stat-number {
+  animation: count-up 0.8s ease-out, number-glow 4s ease-in-out infinite;
+}
+@media (max-width: 768px) {
+  .gradient-text {
+    background-size: 200% 200%;
+  }
+  
+  .ambient-orb {
+    animation-duration: 12s;
+  }
+}
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+}
+
+@keyframes spin-glow {
+  0% {
+    transform: rotate(0deg);
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+    filter: hue-rotate(360deg);
+  }
+}
+
+.loading-spinner {
+  animation: spin-glow 2s linear infinite;
+}
+
+.overflow-hidden {
+}
