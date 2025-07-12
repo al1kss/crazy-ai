@@ -73,13 +73,13 @@ body {
 
 @keyframes glow-pulse {
   0%, 100% {
-    box-shadow: 
+    box-shadow:
       0 0 20px var(--neon-pink-glow),
       0 0 40px var(--neon-pink-glow),
       0 0 60px var(--neon-pink-glow);
   }
   50% {
-    box-shadow: 
+    box-shadow:
       0 0 30px var(--neon-blue-glow),
       0 0 60px var(--neon-blue-glow),
       0 0 90px var(--neon-blue-glow);
@@ -157,7 +157,7 @@ body {
       0 0 0 var(--neon-pink-glow);
   }
   100% {
-    box-shadow: 
+    box-shadow:
       0 20px 40px rgba(0, 0, 0, 0.2),
       0 0 30px var(--neon-pink-glow),
       0 0 60px var(--neon-pink-glow);
@@ -222,12 +222,12 @@ body {
 
 @keyframes number-glow {
   0%, 100% {
-    text-shadow: 
+    text-shadow:
       0 0 10px var(--neon-blue-glow),
       0 0 20px var(--neon-blue-glow);
   }
   50% {
-    text-shadow: 
+    text-shadow:
       0 0 20px var(--neon-pink-glow),
       0 0 30px var(--neon-pink-glow);
   }
@@ -240,28 +240,11 @@ body {
   .gradient-text {
     background-size: 200% 200%;
   }
-  
+
   .ambient-orb {
     animation-duration: 12s;
   }
 }
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(45deg, var(--neon-pink), var(--neon-blue));
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
-}
-
 @keyframes spin-glow {
   0% {
     transform: rotate(0deg);

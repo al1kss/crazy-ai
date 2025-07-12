@@ -155,28 +155,6 @@ const LiveStats = () => {
   return (
     <section ref={ref} className="relative py-20 px-4 z-10">
       <div className="max-w-6xl mx-auto">
-        <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-          transition={{ duration: 0.6 }}
-        >
-          <motion.div
-            className="inline-flex items-center bg-neon-blue/10 border border-neon-blue/30 rounded-full px-4 py-2 mb-6"
-            whileHover={{ scale: 1.05 }}
-          >
-            <Zap className="w-4 h-4 text-neon-blue mr-2" />
-            <span className="text-neon-blue font-medium text-sm">Live Statistics</span>
-          </motion.div>
-
-          <h2 className="text-4xl md:text-5xl font-bold gradient-text mb-4">
-            Powering Innovation
-          </h2>
-          <p className="text-soft-warmGray text-lg max-w-2xl mx-auto">
-            Real-time metrics showcasing the impact of YourAI across our growing community of developers and professionals.
-          </p>
-        </motion.div>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {stats.map((stat, index) => (
             <StatCard
@@ -188,16 +166,6 @@ const LiveStats = () => {
           ))}
         </div>
 
-        <motion.div
-          className="text-center mt-12"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ delay: 1.5, duration: 0.6 }}
-        >
-          <p className="text-soft-warmGray text-sm">
-            Updated in real-time • Join thousands of users already building with YourAI
-          </p>
-        </motion.div>
       </div>
     </section>
   )
