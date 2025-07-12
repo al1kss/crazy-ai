@@ -78,7 +78,7 @@ const AIModelCard = ({ icon, title, description, comingSoon = false, isActive = 
 }
 export default function HomePage() {
   const typingWords = ["Build with AI", "Create with AI", "Innovate with AI", "It's YourAI"]
-  const typedText = useTypingEffect(typingWords, 80, 2000)
+  const typedText = useTypingEffect(typingWords, 110, 2000)
 
   return (
     <div className="min-h-screen">
