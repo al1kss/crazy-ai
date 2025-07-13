@@ -227,12 +227,6 @@ const Header = () => {
                   >
                     Sign In
                   </button>
-                  <button
-                    onClick={() => openAuthModal('register')}
-                    className="text-gray-300 hover:text-white transition-colors"
-                  >
-                    Sign Up
-                  </button>
                   <motion.button
                     onClick={() => openAuthModal('login')}
                     className="flex items-center space-x-1 bg-gradient-to-r from-neon-pink to-neon-blue text-soft-cream text-sm font-medium px-4 py-2 rounded-md hover:shadow-md hover:shadow-neon-pink/40 transition-all duration-300"
@@ -334,15 +328,15 @@ const Header = () => {
                   >
                     Sign In
                   </button>
-                  <button
-                    onClick={() => {
-                      openAuthModal('register')
-                      setIsMobileMenuOpen(false)
-                    }}
-                    className="block w-full text-left text-gray-300 hover:text-white transition-colors"
+                  <motion.button
+                      onClick={handleStartChatClick}
+                      className="flex items-center space-x-1 bg-gradient-to-r from-neon-pink to-neon-blue text-soft-cream text-sm font-medium px-4 py-2 rounded-md hover:shadow-md hover:shadow-neon-pink/40 transition-all duration-300"
+                      whileHover={{scale: 1.05}}
+                      whileTap={{scale: 0.95}}
                   >
-                    Sign Up
-                  </button>
+                    Start Chat
+                    <ArrowRight className="w-4 h-4"/>
+                  </motion.button>
                 </div>
               )}
             </div>
@@ -351,16 +345,16 @@ const Header = () => {
       </nav>
 
       {isDropdownOpen && (
-        <div
-          className="fixed inset-0 z-30"
-          onClick={() => setIsDropdownOpen(false)}
-        />
+          <div
+              className="fixed inset-0 z-30"
+              onClick={() => setIsDropdownOpen(false)}
+          />
       )}
 
       <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        initialMode={authModalMode}
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+          initialMode={authModalMode}
       />
     </motion.header>
   )
