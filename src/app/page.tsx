@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { ArrowRight, Bot, Brain, Flame, Hammer, Sparkles } from 'lucide-react'
 import { Analytics } from "@vercel/analytics/next"
-import AmbientBackground from '../components/homepage/background'
 import LiveStats from '../components/homepage/stats'
 
 const useTypingEffect = (words: string[], speed = 110, delayBetweenWords = 2000) => {
@@ -84,7 +83,6 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       <Analytics />
-      <AmbientBackground />
 
       <section className="relative min-h-screen flex flex-col justify-center items-center px-4 overflow-hidden">
         <motion.div
