@@ -59,7 +59,6 @@ const AmbientBackground = () => {
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-[-1]">
-      {/* main grad background */}
       <div className="absolute inset-0 bg-gradient-to-br from-bg-primary via-bg-secondary to-bg-primary" />
 
       {orbs.map((orb) => (
@@ -86,6 +85,27 @@ const AmbientBackground = () => {
             delay: orb.delay,
             repeat: Infinity,
             ease: 'easeInOut',
+          }}
+        />
+      ))}
+
+      {Array.from({ length: 50 }, (_, i) => (
+        <motion.div
+          key={`particle-${i}`}
+          className="absolute w-1 h-1 rounded-full bg-neon-blue opacity-30"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+          }}
+          animate={{
+            y: [0, -100],
+            opacity: [0, 0.6, 0],
+          }}
+          transition={{
+            duration: Math.random() * 10 + 5,
+            delay: Math.random() * 5,
+            repeat: Infinity,
+            ease: 'easeOut',
           }}
         />
       ))}

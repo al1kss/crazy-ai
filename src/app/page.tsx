@@ -94,44 +94,58 @@ export default function HomePage() {
             transition={{duration: 0.8}}
         >
           <motion.p
-              className="text-neon-blue font-medium text-base mb-3 tracking-wide"
+              className="text-neon-blue font-medium text-lg mb-8 tracking-wide mt-12"
               initial={{opacity: 0, y: 20}}
-              animate={{opacity: 1}}
+              animate={{opacity: 1, y: 0}}
               transition={{delay: 0.3, duration: 0.6}}
           >
             Next Generation AI Assistant
           </motion.p>
 
-          <div className="mb-7">
-            <h1 className="text-6xl md:text-8xl font-bold mb-4">
-              <span
-                  className="bg-gradient-to-r from-soft-cream via-neon-blue to-neon-pink bg-clip-text text-transparent animate-gradient bg-[length:200%_200%]">
-                {typedText}
-              </span>
-              <motion.span
-                  className="inline-block w-1 h-15 md:h-22 bg-neon-pink ml-2"
-                  animate={{opacity: [1, 0]}}
-                  transition={{duration: 1, repeat: Infinity}}
+          <div className="mb-2">
+            <div className="relative">
+              <h1 className="text-8xl md:text-7xl font-bold mb-4">
+                <span className="bg-gradient-to-r from-soft-cream via-neon-blue to-neon-pink bg-clip-text text-transparent animate-gradient bg-[length:200%_200%]">
+                  {typedText}
+                </span>
+                <motion.span
+                    className="inline-block w-1 h-14 md:h-19 bg-neon-pink ml-2"
+                    animate={{opacity: [1, 0]}}
+                    transition={{duration: 1, repeat: Infinity}}
+                />
+              </h1>
+
+              <motion.div
+                className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 h-1 bg-gradient-to-r from-neon-pink via-neon-blue to-neon-purple rounded-full"
+                initial={{ width: "0%" }}
+                animate={{ width: `${(typedText.length / 17) * 60}%` }}
+                transition={{ duration: 0.3 }}
               />
-            </h1>
+            </div>
 
             <motion.p
-                className="text-lg md:text-xl text-soft-warmGray max-w-3xl mx-auto leading-relaxed mb-8"
+                className="text-l md:text-2xl text-soft-warmGray max-w-3xl mx-auto leading-relaxed mb-1 mt-11"
                 initial={{opacity: 0}}
                 animate={{opacity: 1}}
                 transition={{delay: 0.6, duration: 0.6}}
             >
               Transform your workflow with intelligent AI assistants tailored for professionals and enthusiasts alike.
             </motion.p>
-          </div>
 
-          <div className="w-screen max-w-none self-start text-left justify-self-center">
-            <LiveStats/>
+            <motion.div
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                transition={{delay: 0.8, duration: 0.6}}
+            >
+              <div className="w-screen max-w-none self-start text-left justify-self-center mt-0" style={{marginTop: "-40px"}}>
+                <LiveStats/>
+              </div>
+            </motion.div>
           </div>
-
 
           <motion.div
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8"
+              style={{marginTop: "-20px"}}
               initial={{opacity: 0, y: 20}}
               animate={{opacity: 1, y: 0}}
               transition={{delay: 1.0, duration: 0.6}}
@@ -145,6 +159,12 @@ export default function HomePage() {
                 Start Chatting
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/>
               </span>
+              <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-neon-blue to-neon-pink"
+                  initial={{x: "100%"}}
+                  whileHover={{x: "0%"}}
+                  transition={{duration: 0.3}}
+              />
             </motion.button>
 
             <motion.button
@@ -157,14 +177,13 @@ export default function HomePage() {
           </motion.div>
         </motion.div>
 
-
         <motion.div
-            className="z-10 w-full max-w-6xl mx-auto"
-            initial={{opacity: 0, y: 50}}
-            animate={{opacity: 1, y: 0}}
-            transition={{delay: 1.4, duration: 0.8}}
+          className="z-10 w-full max-w-6xl mx-auto mb-8"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2, duration: 0.8 }}
         >
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h2 className="text-3xl md:text-4xl font-bold text-soft-cream mb-4">
               Choose Your AI Assistant
             </h2>
@@ -202,13 +221,13 @@ export default function HomePage() {
         </motion.div>
 
         <motion.div
-            className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10"
-            initial={{opacity: 0}}
-            animate={{opacity: 1}}
-            transition={{delay: 1.8, duration: 0.6}}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.5, duration: 0.6 }}
         >
-          <div className="flex items-center gap-2 text-soft-warmGray text-xs">
-            <Sparkles className="w-3 h-3 text-neon-blue"/>
+          <div className="flex items-center gap-2 text-soft-warmGray text-sm">
+            <Sparkles className="w-4 h-4 text-neon-blue" />
             <span>Powered by LightRAG & Cloudflare AI</span>
           </div>
         </motion.div>
