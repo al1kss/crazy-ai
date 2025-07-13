@@ -7,7 +7,7 @@ import { Analytics } from "@vercel/analytics/next"
 import AmbientBackground from '../components/homepage/background'
 import LiveStats from '../components/homepage/stats'
 
-const useTypingEffect = (words: string[], speed = 100, delayBetweenWords = 2000) => {
+const useTypingEffect = (words: string[], speed = 110, delayBetweenWords = 2000) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0)
   const [currentText, setCurrentText] = useState('')
   const [isDeleting, setIsDeleting] = useState(false)
@@ -79,7 +79,7 @@ const AIModelCard = ({ icon, title, description, comingSoon = false, isActive = 
 
 export default function HomePage() {
   const typingWords = ["Build with AI", "Create with AI", "Innovate with AI", "It's YourAI"]
-  const typedText = useTypingEffect(typingWords, 110, 2000)
+  const typedText = useTypingEffect(typingWords, 115, 2000)
 
   return (
     <div className="min-h-screen">
@@ -94,7 +94,7 @@ export default function HomePage() {
             transition={{duration: 0.8}}
         >
           <motion.p
-              className="text-neon-blue font-medium text-lg mb-8 tracking-wide mt-12"
+              className="text-neon-blue font-medium text-lg mb-8 tracking-wide mt-10"
               initial={{opacity: 0, y: 20}}
               animate={{opacity: 1, y: 0}}
               transition={{delay: 0.3, duration: 0.6}}
@@ -116,20 +116,20 @@ export default function HomePage() {
               </h1>
 
               <motion.div
-                className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 h-1 bg-gradient-to-r from-neon-pink via-neon-blue to-neon-purple rounded-full"
-                initial={{ width: "0%" }}
-                animate={{ width: `${(typedText.length / 17) * 60}%` }}
+                className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 h-1 bg-gradient-to-r from-neon-pink via-neon-blue to-neon-purple rounded-full"
+                initial={{ width: "30%" }}
+                animate={{ width: `${(typedText.length / 17) * 30}%` }}
                 transition={{ duration: 0.3 }}
               />
             </div>
 
             <motion.p
-                className="text-l md:text-2xl text-soft-warmGray max-w-3xl mx-auto leading-relaxed mb-1 mt-11"
+                className="text-2xl md:text-2xl text-soft-cream max-w-4xl mx-auto leading-relaxed mb-1 mt-14"
                 initial={{opacity: 0}}
                 animate={{opacity: 1}}
                 transition={{delay: 0.6, duration: 0.6}}
             >
-              Transform your workflow with intelligent AI assistants tailored for professionals and enthusiasts alike.
+              I built this build your own AI to help coders all around the world transform their workflow with intelligent AI assistants made for professionals and enthusiasts. This tool was designed with custom made LightRAG feature integrations.
             </motion.p>
 
             <motion.div
@@ -144,7 +144,7 @@ export default function HomePage() {
           </div>
 
           <motion.div
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8"
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 -mt-3"
               style={{marginTop: "-20px"}}
               initial={{opacity: 0, y: 20}}
               animate={{opacity: 1, y: 0}}
@@ -178,7 +178,7 @@ export default function HomePage() {
         </motion.div>
 
         <motion.div
-          className="z-10 w-full max-w-6xl mx-auto mb-8"
+          className="z-10 w-full max-w-6xl mx-auto mb-10"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2, duration: 0.8 }}
@@ -221,12 +221,12 @@ export default function HomePage() {
         </motion.div>
 
         <motion.div
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10"
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 mt-14"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5, duration: 0.6 }}
         >
-          <div className="flex items-center gap-2 text-soft-warmGray text-sm">
+          <div className="flex items-center gap-2 text-soft-warmGray text-sm mt-10">
             <Sparkles className="w-4 h-4 text-neon-blue" />
             <span>Powered by LightRAG & Cloudflare AI</span>
           </div>
