@@ -235,12 +235,12 @@ export default function HomePage() {
         </motion.div>
 
         <motion.div
-          className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 mt-14"
+          className="mt-4 mb-5"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5, duration: 0.6 }}
         >
-          <div className="flex items-center gap-2 text-soft-warmGray text-sm mt-10">
+          <div className="flex items-center gap-2 text-soft-warmGray text-sm">
             <Sparkles className="w-4 h-4 text-neon-blue" />
             <span>Powered by LightRAG & Cloudflare AI</span>
           </div>
