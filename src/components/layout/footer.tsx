@@ -72,8 +72,7 @@ const Footer = () => {
   ];
 
   return (
-      <footer
-          className="relative bg-gradient-to-t from-bg-primary/80 via-bg-secondary/40 to-transparent border-t border-gray-700/30 overflow-hidden">
+      <footer className="relative backdrop-blur-sm bg-gray-900/40 border-t border-gray-700/30 overflow-hidden">
           <div
               className="absolute top-0 inset-x-0 h-0.5 bg-gradient-to-r from-transparent via-neon-pink to-transparent"/>
 
@@ -133,8 +132,8 @@ const Footer = () => {
                           <span className="text-soft-cream">Your</span>
                           <span
                               className="bg-gradient-to-r from-neon-pink via-neon-blue to-neon-purple bg-clip-text text-transparent">
-                AI
-              </span>
+                              AI
+                          </span>
                       </motion.h3>
                       <motion.p
                           className="text-soft-warmGray leading-relaxed mb-6"
