@@ -133,17 +133,17 @@ export default function ChatPage() {
               className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto"
               initial={{opacity: 0}}
               animate={{opacity: 1}}
-              transition={{delay: 0.4, duration: 0.8}}
+              transition={{delay: 0.1, duration: 0.8}}
           >
             {aiModels.map((model, index) => (
                 <motion.div
                     key={model.id}
-                    className={`relative group cursor-pointer transition-all duration-300 ${
+                    className={`relative group cursor-pointer transition-all duration-75 ${
                         !model.isActive ? 'opacity-60 cursor-not-allowed' : ''
                     }`}
                     initial={{opacity: 0, y: 20}}
                     animate={{opacity: 1, y: 0}}
-                    transition={{delay: 0.6 + index * 0.1, duration: 0.6}}
+                    transition={{delay: index * 0.05, duration: 0.3}}
                     whileHover={model.isActive ? {scale: 1.02, y: -5} : {}}
                     onClick={() => handleModelSelect(model)}
                 >
@@ -152,7 +152,7 @@ export default function ChatPage() {
                 bg-gradient-to-br ${model.gradient}
                 ${model.borderGlow}
                 ${model.isActive ? 'hover:shadow-2xl hover:shadow-purple-500/25' : ''}
-                transition-all duration-300 p-8
+                transition-all duration-75 p-8
               `}>
                     {model.isActive && (
                         <motion.div
@@ -179,7 +179,7 @@ export default function ChatPage() {
                                 className="flex items-center gap-2 px-3 py-1 bg-amber-500/20 border border-amber-500/30 rounded-full"
                                 initial={{scale: 0}}
                                 animate={{scale: 1}}
-                                transition={{delay: 0.8 + index * 0.1}}
+                                transition={{delay: index * 0.05}}
                             >
                               <Clock className="w-4 h-4 text-amber-400"/>
                               <span className="text-amber-400 text-sm font-medium">Coming Soon</span>
