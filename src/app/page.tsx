@@ -42,10 +42,10 @@ const AIModelCard = ({ icon, title, description, comingSoon = false, isActive = 
 }) => {
   return (
     <motion.div
-      className={`relative group cursor-pointer p-6 rounded-2xl border transition-all duration-300 ${
+      className={`relative group cursor-pointer p-6 rounded-2xl border transition-all duration-300 backdrop-blur-sm ${
         isActive 
-          ? 'bg-gradient-to-br from-neon-pink/10 to-neon-blue/10 border-neon-pink/50 shadow-lg shadow-neon-pink/25' 
-          : 'bg-bg-tertiary/50 border-soft-charcoal hover:border-neon-blue/50'
+          ? 'bg-gradient-to-br from-neon-pink/20 to-neon-blue/20 border-neon-pink/50 shadow-lg shadow-neon-pink/25 bg-opacity-90' 
+          : 'bg-gray-900/80 border-gray-700/50 hover:border-neon-blue/50 hover:bg-gray-900/90'
       } ${comingSoon ? 'opacity-60' : ''}`}
       whileHover={{
         scale: comingSoon ? 1 : 1.02,
@@ -127,7 +127,7 @@ export default function HomePage() {
                 animate={{opacity: 1}}
                 transition={{delay: 0.6, duration: 0.6}}
             >
-              I built this build your own AI to help coders all around the world transform their workflow with intelligent AI assistants made for professionals and enthusiasts. This tool was designed with custom made LightRAG feature integrations.
+              I built this "build your own AI" to help coders all around the world transform their workflow with intelligent AI assistants made for professionals and enthusiasts. This tool was designed with custom made LightRAG feature integrations.
             </motion.p>
 
             <motion.div
@@ -176,19 +176,35 @@ export default function HomePage() {
         </motion.div>
 
         <motion.div
-          className="z-10 w-full max-w-6xl mx-auto mb-10"
+          className="z-10 w-full max-w-6xl mx-auto mb-10 bottom-10"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2, duration: 0.8 }}
         >
-          <div className="text-center mb-8">
-            <h2 className="text-3xl md:text-4xl font-bold text-soft-cream mb-4">
+          <motion.div
+              className="text-center mt-16 mb-10"
+              initial={{opacity: 0, y: 30}}
+              whileInView={{opacity: 1, y: 0}}
+              transition={{duration: 0.8}}
+              viewport={{once: true}}
+          >
+            <motion.div
+                className="flex justify-center mb-8"
+                initial={{opacity: 0, scaleX: 0}}
+                whileInView={{opacity: 1, scaleX: 1}}
+                transition={{duration: 0.6, delay: 0.2}}
+                viewport={{once: true}}
+            >
+              <div className="h-1 w-24 bg-gradient-to-r from-neon-pink via-neon-blue to-neon-purple rounded-full"></div>
+            </motion.div>
+
+            <h2 className="text-5xl font-bold bg-gradient-to-r from-soft-cream to-purple-100 bg-clip-text text-transparent mb-5">
               Choose Your AI Assistant
             </h2>
-            <p className="text-soft-warmGray text-lg max-w-2xl mx-auto">
-              Select from our specialized AI models, each designed for specific domains and use cases.
+            <p className="text-l text-soft-warmGray max-w-3xl mx-auto">
+              Select from our specialized AI models, each designed for specific domains and use cases
             </p>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <AIModelCard
