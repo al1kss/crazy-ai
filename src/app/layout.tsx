@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Header from '../components/layout/header'
+import Footer from '../components/layout/footer'
 import AmbientBackground from '../components/homepage/background'
 import './globals.css'
 
@@ -43,6 +44,7 @@ export default function RootLayout({
         <main className="pt-16 relative z-10">
           {children}
         </main>
+        <Footer />
       </body>
     </html>
   )
