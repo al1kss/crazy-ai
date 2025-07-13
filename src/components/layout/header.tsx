@@ -11,6 +11,7 @@ const Header = () => {
   const navigationItems = [
     { name: 'About', href: '/about' },
     { name: 'Our Team', href: '/team' },
+    { name: 'Feedback', href: '/feedback' },
   ]
 
   return (
@@ -22,7 +23,6 @@ const Header = () => {
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
             <motion.div
               className="relative"
@@ -50,8 +50,7 @@ const Header = () => {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="flex items-center space-x-6">
             {navigationItems.map((item) => (
               <Link
                 key={item.name}
@@ -64,33 +63,32 @@ const Header = () => {
                 />
               </Link>
             ))}
-          </div>
 
-          <div className="flex items-center space-x-4">
             <Link href="/chat">
               <motion.button
-                className="hidden sm:flex items-center space-x-2 bg-gradient-to-r from-neon-pink to-neon-blue text-soft-cream font-semibold px-6 py-2 rounded-lg hover:shadow-lg hover:shadow-neon-pink/50 transition-all duration-300"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                  className="hidden sm:flex items-center space-x-1 bg-gradient-to-r from-neon-pink to-neon-blue text-soft-cream text-sm font-medium px-4 py-2 rounded-md hover:shadow-md hover:shadow-neon-pink/40 transition-all duration-300"
+                  whileHover={{scale: 1.05}}
+                  whileTap={{scale: 0.95}}
               >
                 <span>Start Chat</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4"/>
               </motion.button>
             </Link>
 
+
             <button
-              className="md:hidden text-soft-warmGray hover:text-neon-blue transition-colors"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} //for phones
+                className="md:hidden text-soft-warmGray hover:text-neon-blue transition-colors"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} //for phones
             >
-              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isMobileMenuOpen ? <X className="w-6 h-6"/> : <Menu className="w-6 h-6"/>}
             </button>
           </div>
         </div>
 
         <motion.div //for phones too
-          className="md:hidden"
-          initial={false}
-          animate={{ height: isMobileMenuOpen ? 'auto' : 0 }}
+            className="md:hidden"
+            initial={false}
+            animate={{height: isMobileMenuOpen ? 'auto' : 0 }}
           transition={{ duration: 0.3 }}
           style={{ overflow: 'hidden' }}
         >
