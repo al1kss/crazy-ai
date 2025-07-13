@@ -213,7 +213,6 @@ export default function HomePage() {
           </div>
         </motion.div>
       </section>
-      <LiveStats/>
     </div>
   )
 }
