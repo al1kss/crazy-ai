@@ -24,6 +24,7 @@ export interface ChatResponse {
   answer: string
   mode: string
   status: string
+  conversation_id?: string
 }
 
 class ApiClient {
@@ -110,16 +111,16 @@ class ApiClient {
   }
 
   // chat
-  async chatFireSafety(question: string, mode: string = 'hybrid'): Promise<ChatResponse> {
-    return this.post('/chat/fire-safety', { question, mode })
+  async chatFireSafety(question: string, mode: string = 'hybrid', conversationId?: string | null): Promise<ChatResponse> {
+    return this.post('/chat/fire-safety', { question, mode, conversation_id: conversationId })
+}
+
+  async chatGeneral(question: string, mode: string = 'hybrid', conversationId?: string | null): Promise<ChatResponse>{
+    return this.post('/chat/general', { question, mode, conversation_id: conversationId })
   }
 
-  async chatGeneral(question: string, mode: string = 'hybrid'): Promise<ChatResponse> {
-    return this.post('/chat/general', { question, mode })
-  }
-
-  async chatCustomAI(aiId: string, question: string, mode: string = 'hybrid'): Promise<ChatResponse> {
-    return this.post(`/chat/custom/${aiId}`, { question, mode })
+  async chatCustomAI(aiId: string, question: string, mode: string = 'hybrid', conversationId?: string | null): Promise<ChatResponse>{
+    return this.post(`/chat/custom/${aiId}`, { question, mode, conversation_id: conversationId })
   }
 
   // kept legaacy support for old endpoints
