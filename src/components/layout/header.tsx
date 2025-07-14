@@ -76,7 +76,7 @@ const Header = () => {
   const openAuthModal = (mode: 'login' | 'register') => {
     setAuthModalMode(mode)
     setIsAuthModalOpen(true)
-    setIsDropdownOpen(false) // Close dropdown when opening modal
+    setIsDropdownOpen(false) // close dropdown when opening modal
   }
 
   const handleModelSelect = (model: typeof aiModels[0]) => {
@@ -153,71 +153,81 @@ const Header = () => {
             <div className="flex items-center space-x-4">
               {isAuthenticated ? (
                 <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2 text-gray-300">
-                    <User className="w-4 h-4" />
-                    <span className="text-sm">{user?.name}</span>
-                  </div>
-                  <button
-                    onClick={logout}
-                    className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    <span className="text-sm">Logout</span>
-                  </button>
                   <div className="relative">
-                    <motion.button
-                      onClick={handleStartChatClick}
-                      className="flex items-center space-x-1 bg-gradient-to-r from-neon-pink to-neon-blue text-soft-cream text-sm font-medium px-4 py-2 rounded-md hover:shadow-md hover:shadow-neon-pink/40 transition-all duration-300"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                    <button
+                      onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                      className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-navy-700"
                     >
-                      Start Chat
-                      <ArrowRight className="w-4 h-4" />
-                    </motion.button>
+                      <User className="w-4 h-4" />
+                      <span className="text-sm">{user?.name}</span>
+                    </button>
 
-                    {/* Dropdown Menu */}
+                    {/* User Dropdown */}
                     {isDropdownOpen && (
                       <motion.div
-                        className="absolute top-full mt-2 right-0 bg-navy-800 border border-white/10 rounded-lg shadow-lg p-4 z-50 min-w-[300px]"
+                        className="absolute top-full mt-2 right-0 border border-white/10 rounded-lg shadow-lg p-4 z-50 min-w-[300px]"
+                        style={{
+                          background: 'linear-gradient(135deg, var(--navy-800) 0%, var(--navy-800) 50%, var(--navy-900) 100%)',
+                          backdropFilter: 'blur(12px)'
+                        }}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 10 }}
                         transition={{ duration: 0.3 }}
                       >
-                        {aiModels.map((model, index) => (
-                          <motion.div
+                        {aiModels.map((model) => (
+                          <button
                             key={model.id}
-                            className={`flex items-center space-x-3 p-3 rounded-md cursor-pointer transition-all duration-300 ${
-                              !model.isActive ? 'opacity-60 cursor-not-allowed' : 'hover:bg-navy-700'
-                            }`}
                             onClick={() => handleModelSelect(model)}
-                            whileHover={model.isActive ? { scale: 1.02 } : {}}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 * index, duration: 0.3 }}
+                            className={`w-full text-left p-3 rounded-md transition-all duration-300 ${
+                              model.isActive 
+                                ? 'hover:bg-navy-700 cursor-pointer' 
+                                : 'opacity-60 cursor-not-allowed'
+                            }`}
                           >
-                            <div className={`
-                              w-10 h-10 rounded-lg ${model.iconBg} 
-                              flex items-center justify-center flex-shrink-0
-                              ${model.iconColor}
-                            `}>
-                              {model.icon}
+                            <div className="flex items-center space-x-3">
+                              <div className={`w-8 h-8 rounded-md ${model.iconBg} flex items-center justify-center ${model.iconColor}`}>
+                                {model.icon}
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-white">{model.title}</p>
+                                <p className="text-xs text-gray-400">{model.description}</p>
+                                {!model.isActive && (
+                                  <div className="flex items-center gap-1 mt-1">
+                                    <Clock className="w-3 h-3 text-amber-400" />
+                                    <span className="text-amber-400 text-xs">Coming Soon</span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                            <div className="flex-1">
-                              <p className="text-sm text-gray-300 font-medium">{model.title}</p>
-                              <p className="text-xs text-gray-400 line-clamp-2">{model.description}</p>
-                              {!model.isActive && (
-                                <div className="flex items-center gap-1 mt-1">
-                                  <Clock className="w-3 h-3 text-amber-400" />
-                                  <span className="text-amber-400 text-xs">Coming Soon</span>
-                                </div>
-                              )}
-                            </div>
-                          </motion.div>
+                          </button>
                         ))}
+                        <div className="border-t border-white/10 mt-3 pt-3">
+                          <button
+                            onClick={() => {
+                              logout()
+                              setIsDropdownOpen(false)
+                            }}
+                            className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors w-full text-left p-2 rounded-md hover:bg-navy-700"
+                          >
+                            <LogOut className="w-4 h-4" />
+                            <span className="text-sm">Logout</span>
+                          </button>
+                        </div>
                       </motion.div>
                     )}
                   </div>
+
+                  <Link href="/chat">
+                    <motion.button
+                      className="flex items-center space-x-2 bg-gradient-to-r from-neon-pink to-neon-blue text-soft-cream text-sm font-medium px-4 py-2 rounded-md hover:shadow-md hover:shadow-neon-pink/40 transition-all duration-300"
+                      whileHover={{ scale: 1.05, boxShadow: "0 0 25px rgba(255, 107, 157, 0.5)"}}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <span>Start Chat</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </motion.button>
+                  </Link>
                 </div>
               ) : (
                 <div className="flex items-center space-x-4">
@@ -227,15 +237,16 @@ const Header = () => {
                   >
                     Sign In
                   </button>
-                  <motion.button
-                    onClick={() => openAuthModal('login')}
-                    className="flex items-center space-x-1 bg-gradient-to-r from-neon-pink to-neon-blue text-soft-cream text-sm font-medium px-4 py-2 rounded-md hover:shadow-md hover:shadow-neon-pink/40 transition-all duration-300"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    Start Chat
-                    <ArrowRight className="w-4 h-4" />
-                  </motion.button>
+                  <Link href="/chat">
+                    <motion.button
+                      className="flex items-center space-x-2 bg-gradient-to-r from-neon-pink to-neon-blue text-soft-cream text-sm font-medium px-4 py-2 rounded-md hover:shadow-md hover:shadow-neon-pink/40 transition-all duration-300"
+                      whileHover={{ scale: 1.05, boxShadow: "0 0 25px rgba(255, 107, 157, 0.5)" }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <span>Start Chat</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </motion.button>
+                  </Link>
                 </div>
               )}
             </div>
@@ -249,7 +260,7 @@ const Header = () => {
           </button>
         </div>
 
-        {/* Mobile Menu */}
+        {/* for mobile Menu */}
         {isMobileMenuOpen && (
           <motion.div
             className="md:hidden bg-navy-800 border-t border-white/10"
