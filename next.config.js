@@ -1,15 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    appDir: true,
+    serverComponentsExternalPackages: ['@prisma/client']
   },
+  swcMinify: true,
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'al1kss-safetyai.hf.space',
-      },
-    ],
+    domains: ['avatars.githubusercontent.com', 'github.com'],
+  },
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals.push('@prisma/client')
+    }
+    return config
   },
 }
 

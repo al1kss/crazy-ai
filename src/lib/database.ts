@@ -1,4 +1,4 @@
-import { PrismaClient } from 'node_modules/.pnpm/@prisma+client@6.11.1_prisma@6.11.1_typescript@5.8.3__typescript@5.8.3/node_modules/@prisma/client'
+import { PrismaClient } from '@prisma/client'
 import { kv } from '@vercel/kv'
 import { put, list, del } from '@vercel/blob'
 import crypto from 'crypto'
