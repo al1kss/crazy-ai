@@ -121,9 +121,8 @@ body {
   }
 }
 
-/* Scrollbar Styling for Dark Theme */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 4px;
 }
 
 ::-webkit-scrollbar-track {
