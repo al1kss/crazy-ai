@@ -26,10 +26,10 @@ const Footer = () => {
     {
       title: "AI Models",
       links: [
-        { name: "Fire Safety AI", href: "/fire-safety", icon: "🔥" },
-        { name: "General Assistant", href: "/general", icon: "🤖", disabled: true },
-        { name: "Physics Expert", href: "/physics", icon: "🧠", disabled: true },
-        { name: "Build Your Own", href: "/custom", icon: "🛠️", disabled: true },
+        { name: "Fire Safety AI", href: "chat/fire-safety", icon: "🔥" },
+        { name: "General Assistant", href: "chat/general", icon: "🤖", disabled: true },
+        { name: "Physics Expert", href: "chat/physics", icon: "🧠", disabled: true },
+        { name: "Build Your Own", href: "chat/custom", icon: "🛠️", disabled: true },
       ],
     },
     {
@@ -250,7 +250,7 @@ const Footer = () => {
               </motion.div>
 
               <motion.div
-                  className="pt-8 border-t border-gray-700/30 text-center"
+                  className="pt-6 border-t border-gray-700/30 text-center -mb-6"
                   initial={{opacity: 0, y: 20}}
                   whileInView={{opacity: 1, y: 0}}
                   transition={{duration: 0.8, delay: 0.6}}
