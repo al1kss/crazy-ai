@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { Flame, Bot, Brain, Hammer, Sparkles, ArrowRight, Clock } from 'lucide-react'
-import { useAuth } from '../../contexts/AuthContext'
+import { useAuth } from '../../../contexts/AuthContext'
 
 export default function ChatPage() {
   const router = useRouter()

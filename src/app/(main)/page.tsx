@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
 import { ArrowRight, Bot, Brain, Flame, Hammer, Sparkles } from 'lucide-react'
 import { Analytics } from "@vercel/analytics/next"
-import LiveStats from '../components/homepage/stats'
+import LiveStats from '../../components/homepage/stats'
 
 const useTypingEffect = (words: string[], speed = 110, delayBetweenWords = 2000) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0)
