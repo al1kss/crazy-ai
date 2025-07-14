@@ -148,12 +148,14 @@ export default function ChatPage() {
                     onClick={() => handleModelSelect(model)}
                 >
                   <div className={`
-                relative overflow-hidden rounded-2xl border backdrop-blur-sm
-                bg-gradient-to-br ${model.gradient}
-                ${model.borderGlow}
-                ${model.isActive ? 'hover:shadow-2xl hover:shadow-purple-500/25' : ''}
-                transition-all duration-75 p-8
-              `}>
+                    relative overflow-hidden rounded-2xl border backdrop-blur-sm
+                    bg-gradient-to-br ${model.gradient}
+                    ${model.borderGlow}
+                    ${model.isActive ? 'hover:shadow-2xl hover:shadow-purple-500/25' : ''}
+                    transition-all duration-75 p-8
+                    flex flex-col justify-between h-full
+                  `}>
+
                     {model.isActive && (
                         <motion.div
                             className="absolute inset-0 bg-gradient-to-r from-white/5 via-transparent to-white/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
@@ -215,12 +217,12 @@ export default function ChatPage() {
           </motion.div>
 
           <motion.div
-              className="text-center mt-16"
+              className="text-center mt-16 -mb-8"
               initial={{opacity: 0}}
               animate={{opacity: 1}}
               transition={{delay: 1.2, duration: 0.6}}
           >
-            <div className="flex items-center justify-center gap-2 text-gray-400 text-sm">
+          <div className="flex items-center justify-center gap-2 text-gray-400 text-sm">
               <Sparkles className="w-4 h-4 text-blue-400"/>
               <span>Powered by LightRAG & Cloudflare AI</span>
             </div>
