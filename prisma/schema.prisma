@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String
+  hashedEmail String   @unique @map("hashed_email")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  subscriptionType String @default("free") @map("subscription_type")
+  preferences      Json   @default("{}")
+  isActive         Boolean @default(true) @map("is_active")
+
+  customAis      CustomAI[]
+  conversations  Conversation[]
+  sessions       UserSession[]
+
+  @@map("users")
+}
+
+model CustomAI {
+  id              String   @id @default(cuid())
+  userId          String   @map("user_id")
+  name            String
+  description     String?
+  knowledgeFiles  Json     @default("[]") @map("knowledge_files")
+  blobUrls        Json     @default("[]") @map("blob_urls")
+  chunksCount     Int      @default(0) @map("chunks_count")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  isActive        Boolean  @default(true) @map("is_active")
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversations Conversation[]
+
+  @@map("custom_ais")
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  aiType    String   @map("ai_type") //"fire-safety", "general", and "custom"
+  aiId      String?  @map("ai_id") // NULL for built in AIs, UUID for custom AIs
+  title     String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  isActive  Boolean  @default(true) @map("is_active")
+
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customAI CustomAI?  @relation(fields: [aiId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String   @map("conversation_id")
+  role           String   // "user" or "assistant"
+  content        String
+  metadata       Json     @default("{}") // store context, mode, tokens used, etc.
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model UserSession {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  tokenHash   String   @unique @map("token_hash")
+  expiresAt   DateTime @map("expires_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  lastUsedAt  DateTime @default(now()) @map("last_used_at")
+  userAgent   String?  @map("user_agent")
+  ipAddress   String?  @map("ip_address")
+  isActive    Boolean  @default(true) @map("is_active")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_sessions")
+}
+
+model SystemStats {
+  id              String   @id @default(cuid())
+  totalUsers      Int      @default(0) @map("total_users")
+  totalAIs        Int      @default(0) @map("total_ais")
+  totalMessages   Int      @default(0) @map("total_messages")
+  date            DateTime @unique
+
+  @@map("system_stats")
+}
