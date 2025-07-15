@@ -613,8 +613,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ aiType, aiId }) => {
         {/* chat box */}
         <div className="sticky bottom-2.5 mx-auto pt-6 z-[5] flex justify-center md:px-2">
           <div className="px-3 md:px-2 w-[48rem]">
-            <div
-                className="flex flex-col bg-[#30302e] border-0.5 border-[rgba(222, 220, 209, 0.15)] mx-2 md:mx-0 items-stretch transition-all duration-200 relative shadow-[0_0.25rem_1.25rem_#00000009] focus-within:shadow-[0_0.25rem_1.25rem_#00000013] hover:border-[#dedcd14d] focus-within:border-[#dedcd14d] cursor-text z-10 rounded-2xl">
+            <div className="
+    flex flex-col bg-[#30302e] border-[1px] border-[rgba(222,220,209,0.08)] mx-2 md:mx-0 items-stretch transition-all duration-200 relative shadow-[0_0.25rem_1.25rem_rgba(0,0,0,0.09)] hover:shadow-[0_0.5rem_2rem_rgba(0,0,0,0.15)] focus-within:shadow-[0_0.5rem_2rem_rgba(196,100,66,0.25)] focus-within:border-[rgba(196,100,66,0.5)] cursor-text z-10 rounded-2xl group">
               <div className="flex flex-col gap-3.5 m-3.5">
                 <div className="relative">
                   <div
