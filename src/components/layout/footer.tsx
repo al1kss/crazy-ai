@@ -29,7 +29,7 @@ const Footer = () => {
         { name: "Fire Safety AI", href: "chat/fire-safety", icon: "🔥" },
         { name: "General Assistant", href: "chat/general", icon: "🤖", disabled: true },
         { name: "Physics Expert", href: "chat/physics", icon: "🧠", disabled: true },
-        { name: "Build Your Own", href: "chat/custom", icon: "🛠️", disabled: true },
+        { name: "Build Your Own", href: "chat/custom", icon: "🛠️" },
       ],
     },
     {
@@ -38,7 +38,7 @@ const Footer = () => {
         { name: "Documentation", href: "/docs", icon: "📚", disabled: true },
         { name: "API Reference", href: "/api", icon: "🔗", disabled: true },
         { name: "Support", href: "/support", icon: "🛟", disabled: true },
-        { name: "Feedback", href: "/feedback", icon: "💡", disabled: true },
+        { name: "Feedback", href: "/feedback", icon: "💡"},
       ],
     },
   ];
