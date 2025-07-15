@@ -46,7 +46,7 @@ const Footer = () => {
   const socialLinks = [
     {
       name: "GitHub",
-      href: "https://github.com/al1kss/SpeciesTracker",
+      href: "https://github.com/al1kss/",
       icon: FaGithub,
       color: "hover:text-white dark:hover:text-white",
     },
