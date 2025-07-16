@@ -23,6 +23,8 @@ model User {
   customAis      CustomAI[]
   conversations  Conversation[]
   sessions       UserSession[]
+  ragInstances   RAGInstance[]     // New: RAG instances
+  knowledgeFiles KnowledgeFile[]   // New: Uploaded files
 
   @@map("users")
 }
@@ -38,6 +40,10 @@ model CustomAI {
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
   isActive        Boolean  @default(true) @map("is_active")
+
+  // New: Link to RAG instance
+  ragInstanceId   String?  @map("rag_instance_id")
+  ragInstance     RAGInstance? @relation(fields: [ragInstanceId], references: [id])
 
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   conversations Conversation[]
@@ -99,4 +105,61 @@ model SystemStats {
   date            DateTime @unique
 
   @@map("system_stats")
+}
+
+model RAGInstance {
+  id              String   @id @default(cuid())
+  userId          String?  @map("user_id")          // NULL for AIs like fire-safety
+  aiType          String   @map("ai_type")          // "fire-safety", "general", "custom"
+  aiId            String?  @map("ai_id")            // For custom AIs
+  name            String                            // display name
+  description     String?
+
+  graphBlobUrl    String   @map("graph_blob_url")
+  vectorBlobUrl   String   @map("vector_blob_url")
+  configBlobUrl   String   @map("config_blob_url")
+
+  totalChunks     Int      @default(0) @map("total_chunks")
+  totalTokens     Int      @default(0) @map("total_tokens")
+  fileCount       Int      @default(0) @map("file_count")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  lastAccessedAt  DateTime @default(now()) @map("last_accessed_at")
+
+  status          String   @default("active")       // "active", "processing", "error"
+  processingLog   String?  @map("processing_log")   // Error messages or logs
+
+  user            User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customAIs       CustomAI[]
+  knowledgeFiles  KnowledgeFile[]
+
+  @@unique([aiType, userId, aiId])
+  @@map("rag_instances")
+}
+
+model KnowledgeFile {
+  id            String   @id @default(cuid())
+  userId        String   @map("user_id")
+  ragInstanceId String   @map("rag_instance_id")
+
+  filename      String
+  originalName  String   @map("original_name")
+  fileType      String   @map("file_type")        // "pdf", "txt", "docx", etc.
+  fileSize      Int      @map("file_size")        // in bytes
+
+  blobUrl       String   @map("blob_url")
+
+  processedAt   DateTime? @map("processed_at")
+  processingStatus String @default("pending") @map("processing_status") // "pending", "processed", "error"
+  extractedText String?  @map("extracted_text") //for debug
+  tokenCount    Int      @default(0) @map("token_count")
+
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ragInstance   RAGInstance @relation(fields: [ragInstanceId], references: [id], onDelete: Cascade)
+
+  @@map("knowledge_files")
 }
