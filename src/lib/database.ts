@@ -44,7 +44,7 @@ export class UserService {
       }
     })
 
-    await CacheService.set(`user:${user.id}`, user, 3600) // 1 hour cache
+    await CacheService.set(`user:${user.id}`, user, 3600)
 
     return user
   }
@@ -218,6 +218,16 @@ export class CustomAIService {
         chunksCount: true,
         createdAt: true,
         updatedAt: true,
+        ragInstance: {
+          select: {
+            id: true,
+            status: true,
+            totalChunks: true,
+            totalTokens: true,
+            fileCount: true,
+            lastAccessedAt: true
+          }
+        },
         _count: {
           select: {
             conversations: true
@@ -236,6 +246,21 @@ export class CustomAIService {
     const ai = await prisma.customAI.findFirst({
       where: { id, userId, isActive: true },
       include: {
+        ragInstance: {
+          include: {
+            knowledgeFiles: {
+              where: { processingStatus: 'processed' },
+              select: {
+                filename: true,
+                originalName: true,
+                fileType: true,
+                fileSize: true,
+                processedAt: true,
+                tokenCount: true
+              }
+            }
+          }
+        },
         _count: {
           select: {
             conversations: true
@@ -285,7 +310,7 @@ export class ConversationService {
       include: {
         messages: {
           orderBy: { createdAt: 'desc' },
-          take: 1, // get last message only (for preview)
+          take: 1,
           select: {
             content: true,
             role: true,
@@ -302,7 +327,7 @@ export class ConversationService {
         }
       },
       orderBy: { updatedAt: 'desc' },
-      take: 50 // kimit 50 conversations
+      take: 50
     })
 
     // cache 15mins
@@ -381,6 +406,212 @@ export class ConversationService {
     await CacheService.del(`user:${userId}:conversations`)
 
     return result
+  }
+}
+
+// NEW: RAG Service for LightRAG knowledge kinda handling
+export class RAGService {
+  static async createRAGInstance(
+    aiType: string,
+    userId: string | null,
+    aiId: string | null,
+    name: string,
+    description: string | null,
+    graphBlobUrl: string,
+    vectorBlobUrl: string,
+    configBlobUrl: string,
+    metadata: {
+      totalChunks: number;
+      totalTokens: number;
+      fileCount: number;
+    }
+  ) {
+    const ragInstance = await prisma.rAGInstance.create({
+      data: {
+        userId,
+        aiType,
+        aiId,
+        name,
+        description,
+        graphBlobUrl,
+        vectorBlobUrl,
+        configBlobUrl,
+        totalChunks: metadata.totalChunks,
+        totalTokens: metadata.totalTokens,
+        fileCount: metadata.fileCount,
+        status: 'active'
+      }
+    })
+
+    // Update cache
+    if (userId) {
+      await CacheService.del(`user:${userId}:rag_instances`)
+    }
+    await CacheService.del(`rag_instances:${aiType}`)
+
+    return ragInstance
+  }
+
+  static async getRAGInstance(aiType: string, userId?: string, aiId?: string) {
+    const ragInstance = await prisma.rAGInstance.findFirst({
+      where: {
+        aiType,
+        userId,
+        aiId,
+        status: 'active'
+      },
+      include: {
+        knowledgeFiles: {
+          where: { processingStatus: 'processed' },
+          select: {
+            filename: true,
+            originalName: true,
+            fileType: true,
+            fileSize: true,
+            processedAt: true,
+            tokenCount: true
+          }
+        }
+      }
+    })
+
+    if (ragInstance) {
+      await prisma.rAGInstance.update({
+        where: { id: ragInstance.id },
+        data: { lastAccessedAt: new Date() }
+      })
+    }
+
+    return ragInstance
+  }
+
+  static async updateRAGInstanceStatus(id: string, status: string, processingLog?: string) {
+    return await prisma.rAGInstance.update({
+      where: { id },
+      data: {
+        status,
+        processingLog,
+        updatedAt: new Date()
+      }
+    })
+  }
+
+  static async getUserRAGInstances(userId: string) {
+    const cachedInstances = await CacheService.get<any>(`user:${userId}:rag_instances`)
+    if (cachedInstances) return cachedInstances
+
+    const instances = await prisma.rAGInstance.findMany({
+      where: { userId, status: 'active' },
+      include: {
+        knowledgeFiles: {
+          where: { processingStatus: 'processed' },
+          select: {
+            filename: true,
+            originalName: true,
+            fileType: true,
+            fileSize: true,
+            processedAt: true,
+            tokenCount: true
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    })
+
+    await CacheService.set(`user:${userId}:rag_instances`, instances, 1800)
+
+    return instances
+  }
+
+  static async deleteRAGInstance(id: string) {
+    const ragInstance = await prisma.rAGInstance.findUnique({
+      where: { id },
+      select: { userId: true, graphBlobUrl: true, vectorBlobUrl: true, configBlobUrl: true }
+    })
+
+    if (ragInstance) {
+      try {
+        await del([ragInstance.graphBlobUrl, ragInstance.vectorBlobUrl, ragInstance.configBlobUrl])
+      } catch (error) {
+        console.error('Failed to delete blob files:', error)
+      }
+
+      await prisma.rAGInstance.update({
+        where: { id },
+        data: { status: 'deleted' }
+      })
+
+      if (ragInstance.userId) {
+        await CacheService.del(`user:${ragInstance.userId}:rag_instances`)
+      }
+    }
+  }
+}
+
+
+export class KnowledgeFileService {
+  static async createKnowledgeFile(
+    userId: string,
+    ragInstanceId: string,
+    filename: string,
+    originalName: string,
+    fileType: string,
+    fileSize: number,
+    blobUrl: string
+  ) {
+    const knowledgeFile = await prisma.knowledgeFile.create({
+      data: {
+        userId,
+        ragInstanceId,
+        filename,
+        originalName,
+        fileType,
+        fileSize,
+        blobUrl,
+        processingStatus: 'pending'
+      }
+    })
+
+    return knowledgeFile
+  }
+
+  static async updateKnowledgeFileStatus(
+    id: string,
+    status: 'processed' | 'error',
+    extractedText?: string,
+    tokenCount?: number
+  ) {
+    return await prisma.knowledgeFile.update({
+      where: { id },
+      data: {
+        processingStatus: status,
+        processedAt: status === 'processed' ? new Date() : undefined,
+        extractedText,
+        tokenCount: tokenCount || 0
+      }
+    })
+  }
+
+  static async getKnowledgeFiles(ragInstanceId: string) {
+    return await prisma.knowledgeFile.findMany({
+      where: { ragInstanceId },
+      orderBy: { createdAt: 'desc' }
+    })
+  }
+
+  static async getUserKnowledgeFiles(userId: string) {
+    return await prisma.knowledgeFile.findMany({
+      where: { userId },
+      include: {
+        ragInstance: {
+          select: {
+            name: true,
+            aiType: true
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    })
   }
 }
 
@@ -474,6 +705,7 @@ export class CacheService {
       `user:${userId}`,
       `user:${userId}:ais`,
       `user:${userId}:conversations`,
+      `user:${userId}:rag_instances`,
     ]
 
     for (const key of keys) {
@@ -511,7 +743,7 @@ export class StatsService {
     ]);
 
     await prisma.systemStats.upsert({
-      where: { date: today }, // Corrected where clause
+      where: { date: today },
       update: { totalUsers, totalAIs, totalMessages },
       create: { totalUsers, totalAIs, totalMessages, date: today },
     });
