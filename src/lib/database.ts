@@ -8,7 +8,12 @@ const globalForPrisma = globalThis as unknown as {
 }
 
 export const prisma = globalForPrisma.prisma ?? new PrismaClient({
-  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error']
+  log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  datasources: {
+    db: {
+      url: process.env.POSTGRES_PRISMA_URL,
+    },
+  },
 })
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
@@ -90,10 +95,25 @@ export class UserService {
             chunksCount: true
           }
         },
+        ragInstances: {
+          where: { status: 'active' },
+          select: {
+            id: true,
+            aiType: true,
+            name: true,
+            description: true,
+            totalChunks: true,
+            totalTokens: true,
+            fileCount: true,
+            createdAt: true,
+            lastAccessedAt: true
+          }
+        },
         _count: {
           select: {
             conversations: true,
-            customAis: { where: { isActive: true } }
+            customAis: { where: { isActive: true } },
+            ragInstances: { where: { status: 'active' } }
           }
         }
       },
@@ -330,7 +350,6 @@ export class ConversationService {
       take: 50
     })
 
-    // cache 15mins
     await CacheService.set(`user:${userId}:conversations`, conversations, 900)
 
     return conversations
@@ -409,7 +428,7 @@ export class ConversationService {
   }
 }
 
-// NEW: RAG Service for LightRAG knowledge kinda handling
+// NEW: Enhanced RAG Service for backend compatibility
 export class RAGService {
   static async createRAGInstance(
     aiType: string,
@@ -453,6 +472,10 @@ export class RAGService {
   }
 
   static async getRAGInstance(aiType: string, userId?: string, aiId?: string) {
+    const cacheKey = `rag_instance:${aiType}:${userId || 'system'}:${aiId || 'default'}`
+    const cachedInstance = await CacheService.get<any>(cacheKey)
+    if (cachedInstance) return cachedInstance
+
     const ragInstance = await prisma.rAGInstance.findFirst({
       where: {
         aiType,
@@ -480,13 +503,15 @@ export class RAGService {
         where: { id: ragInstance.id },
         data: { lastAccessedAt: new Date() }
       })
+
+      await CacheService.set(cacheKey, ragInstance, 3600)
     }
 
     return ragInstance
   }
 
   static async updateRAGInstanceStatus(id: string, status: string, processingLog?: string) {
-    return await prisma.rAGInstance.update({
+    const result = await prisma.rAGInstance.update({
       where: { id },
       data: {
         status,
@@ -494,6 +519,19 @@ export class RAGService {
         updatedAt: new Date()
       }
     })
+
+    // Clear cache
+    const instance = await prisma.rAGInstance.findUnique({
+      where: { id },
+      select: { aiType: true, userId: true, aiId: true }
+    })
+
+    if (instance) {
+      const cacheKey = `rag_instance:${instance.aiType}:${instance.userId || 'system'}:${instance.aiId || 'default'}`
+      await CacheService.del(cacheKey)
+    }
+
+    return result
   }
 
   static async getUserRAGInstances(userId: string) {
@@ -526,28 +564,32 @@ export class RAGService {
   static async deleteRAGInstance(id: string) {
     const ragInstance = await prisma.rAGInstance.findUnique({
       where: { id },
-      select: { userId: true, graphBlobUrl: true, vectorBlobUrl: true, configBlobUrl: true }
+      select: { userId: true, graphBlobUrl: true, vectorBlobUrl: true, configBlobUrl: true, aiType: true, aiId: true }
     })
 
     if (ragInstance) {
       try {
+        // Delete from Vercel Blob
         await del([ragInstance.graphBlobUrl, ragInstance.vectorBlobUrl, ragInstance.configBlobUrl])
       } catch (error) {
         console.error('Failed to delete blob files:', error)
       }
 
+      // Soft delete in database
       await prisma.rAGInstance.update({
         where: { id },
         data: { status: 'deleted' }
       })
 
+      // Clear cache
       if (ragInstance.userId) {
         await CacheService.del(`user:${ragInstance.userId}:rag_instances`)
       }
+      const cacheKey = `rag_instance:${ragInstance.aiType}:${ragInstance.userId || 'system'}:${ragInstance.aiId || 'default'}`
+      await CacheService.del(cacheKey)
     }
   }
 }
-
 
 export class KnowledgeFileService {
   static async createKnowledgeFile(
@@ -557,7 +599,8 @@ export class KnowledgeFileService {
     originalName: string,
     fileType: string,
     fileSize: number,
-    blobUrl: string
+    blobUrl: string,
+    contentText: string
   ) {
     const knowledgeFile = await prisma.knowledgeFile.create({
       data: {
@@ -568,6 +611,7 @@ export class KnowledgeFileService {
         fileType,
         fileSize,
         blobUrl,
+        ...(contentText !== undefined ? { contentText } : {}),
         processingStatus: 'pending'
       }
     })
@@ -586,8 +630,8 @@ export class KnowledgeFileService {
       data: {
         processingStatus: status,
         processedAt: status === 'processed' ? new Date() : undefined,
-        extractedText,
-        tokenCount: tokenCount || 0
+        tokenCount: tokenCount || 0,
+        ...(extractedText !== undefined ? { contentText: extractedText } : {})
       }
     })
   }
@@ -753,6 +797,166 @@ export class StatsService {
     return prisma.systemStats.findFirst({
       orderBy: { date: 'desc' }
     })
+  }
+}
+
+// NEW: Backend conversation compatibility layer
+export class BackendConversationService {
+  /**
+   * Interface layer for backend conversation compatibility
+   * Maps frontend Prisma models to backend expectations
+   */
+
+  static async createBackendConversation(
+    conversationId: string,
+    userId: string,
+    aiType: string,
+    aiId?: string,
+    title?: string
+  ) {
+    try {
+      // Create in both systems for compatibility
+      const frontendConversation = await ConversationService.createConversation(
+        userId, aiType, aiId, title
+      )
+
+      // Cache the mapping
+      await CacheService.set(
+        `conversation_mapping:${conversationId}`,
+        { frontendId: frontendConversation.id, userId, aiType, aiId },
+        86400 // 24 hours
+      )
+
+      return frontendConversation
+    } catch (error) {
+      console.error('Backend conversation creation failed:', error)
+      throw error
+    }
+  }
+
+  static async getBackendConversation(conversationId: string) {
+    try {
+      // Try to get from cache first
+      const mapping = await CacheService.get<any>(`conversation_mapping:${conversationId}`)
+
+      if (mapping) {
+        return await ConversationService.getConversation(mapping.frontendId, mapping.userId)
+      }
+
+      // Fallback: try to find by ID directly
+      return await prisma.conversation.findUnique({
+        where: { id: conversationId },
+        include: {
+          messages: {
+            orderBy: { createdAt: 'asc' },
+            select: {
+              id: true,
+              role: true,
+              content: true,
+              createdAt: true,
+              metadata: true
+            }
+          }
+        }
+      })
+    } catch (error) {
+      console.error('Backend conversation retrieval failed:', error)
+      return null
+    }
+  }
+
+  static async addBackendMessage(
+    conversationId: string,
+    role: 'user' | 'assistant',
+    content: string,
+    metadata?: any
+  ) {
+    try {
+      // Check if we have a mapping
+      const mapping = await CacheService.get<any>(`conversation_mapping:${conversationId}`)
+
+      if (mapping) {
+        return await ConversationService.addMessage(
+          mapping.frontendId,
+          role,
+          content,
+          metadata
+        )
+      }
+
+      // Direct backend message creation
+      return await prisma.message.create({
+        data: {
+          conversationId,
+          role,
+          content,
+          metadata: metadata || {}
+        }
+      })
+    } catch (error) {
+      console.error('Backend message creation failed:', error)
+      throw error
+    }
+  }
+}
+
+// Health check functions
+export class HealthService {
+  static async checkDatabaseHealth(): Promise<{ status: string; latency: number; error?: string }> {
+    const start = Date.now()
+    try {
+      await prisma.$queryRaw`SELECT 1`
+      const latency = Date.now() - start
+      return { status: 'healthy', latency }
+    } catch (error) {
+      const latency = Date.now() - start
+      return {
+        status: 'unhealthy',
+        latency,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      }
+    }
+  }
+
+  static async checkCacheHealth(): Promise<{ status: string; latency: number; error?: string }> {
+    const start = Date.now()
+    try {
+      await kv.set('health_check', 'ok', { ex: 10 })
+      const result = await kv.get('health_check')
+      const latency = Date.now() - start
+
+      if (result === 'ok') {
+        await kv.del('health_check')
+        return { status: 'healthy', latency }
+      } else {
+        return { status: 'unhealthy', latency, error: 'Cache read/write failed' }
+      }
+    } catch (error) {
+      const latency = Date.now() - start
+      return {
+        status: 'unhealthy',
+        latency,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      }
+    }
+  }
+
+  static async getOverallHealth() {
+    const [database, cache] = await Promise.all([
+      this.checkDatabaseHealth(),
+      this.checkCacheHealth()
+    ])
+
+    const isHealthy = database.status === 'healthy' && cache.status === 'healthy'
+
+    return {
+      status: isHealthy ? 'healthy' : 'unhealthy',
+      components: {
+        database,
+        cache,
+        timestamp: new Date().toISOString()
+      }
+    }
   }
 }
 
