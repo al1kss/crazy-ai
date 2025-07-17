@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Mail, User, LogIn, UserPlus } from 'lucide-react'
+import { X, Mail, User, LogIn, UserPlus, Lock } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
 interface AuthModalProps {
@@ -17,6 +17,8 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
   const [name, setName] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
 
   const { login, register } = useAuth()
 
@@ -38,16 +40,23 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
     setIsLoading(true)
     setError('')
 
+    if (mode === 'register' && password !== confirmPassword) {
+      setError('Passwords do not match')
+      setIsLoading(false)
+      return
+    }
+
     try {
       if (mode === 'login') {
-        await login(email)
+        await login(email, password)
       } else {
-        await register(email, name)
+        await register(email, name, password)
       }
       onClose()
-      // Reset form
       setEmail('')
       setName('')
+      setPassword('')
+      setConfirmPassword('')
     } catch (err: any) {
       setError(err.message || 'An error occurred')
     } finally {
@@ -146,6 +155,42 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                 />
               </div>
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 bg-navy-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-neon-blue focus:outline-none transition-colors"
+                  placeholder="Enter your password"
+                  required
+                />
+              </div>
+            </div>
+
+            {mode === 'register' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 bg-navy-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-neon-blue focus:outline-none transition-colors"
+                    placeholder="Confirm your password"
+                    required
+                  />
+                </div>
+              </div>
+            )}
 
             {error && (
               <motion.div
