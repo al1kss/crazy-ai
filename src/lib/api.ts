@@ -228,11 +228,11 @@ class ApiClient {
   }
 
   // authentication
-  async register(email: string, name: string, password: string): Promise<{ user: User; token: string; message: string }> {
+  async register(email: string, name: string, password: string): Promise<AuthResponse> {
     return this.post('/auth/register', { email, name, password })
   }
 
-  async login(email: string, password: string): Promise<{ user: User; token: string; message: string }> {
+  async login(email: string, password: string): Promise<AuthResponse> {
     return this.post('/auth/login', { email, password })
   }
 
