@@ -36,12 +36,6 @@ export const validatePassword = (password: string): PasswordValidation => {
     score += 1
   }
 
-  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-    errors.push('Password must contain at least one special character')
-  } else {
-    score += 1
-  }
-
   let strength: 'weak' | 'medium' | 'strong' = 'weak'
   if (score >= 5) strength = 'strong'
   else if (score >= 3) strength = 'medium'
