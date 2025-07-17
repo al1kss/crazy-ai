@@ -85,6 +85,12 @@ export interface BackendChatResponse {
   conversation_id?: string
 }
 
+export interface ConversationMemoryStatus {
+  has_memory: boolean
+  message_count: number
+  last_updated?: string
+}
+
 class ApiClient {
   private getAuthHeaders(): HeadersInit {
     const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null
@@ -170,19 +176,40 @@ class ApiClient {
   }
 
   async get<T>(endpoint: string): Promise<T> {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'GET',
-      headers: this.getAuthHeaders(),
-    })
-    return this.handleResponse<T>(response)
+    try {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'GET',
+        headers: this.getAuthHeaders(),
+      })
+      return this.handleResponse<T>(response)
+    } catch (error) {
+      if (endpoint.includes('/conversations/') && error instanceof Error) {
+        if (error.message.includes('404')) {
+          throw new Error('Conversation not found')
+        }
+        if (error.message.includes('403')) {
+          throw new Error('Access denied to conversation')
+        }
+      }
+      throw error
+    }
   }
 
   async delete<T>(endpoint: string): Promise<T> {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'DELETE',
-      headers: this.getAuthHeaders(),
-    })
-    return this.handleResponse<T>(response)
+    try {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'DELETE',
+        headers: this.getAuthHeaders(),
+      })
+      return this.handleResponse<T>(response)
+    } catch (error) {
+      if (endpoint.includes('/conversations/') && error instanceof Error) {
+        if (error.message.includes('404')) {
+          throw new Error('Conversation not found')
+        }
+      }
+      throw error
+    }
   }
 
   async uploadFiles(files: File[]): Promise<FileUploadResponse[]> {
@@ -400,7 +427,11 @@ export const getFileTypeFromName = (filename: string): string => {
 }
 
 export const handleApiError = (error: any): string => {
-  if (error.message) {
+  if (error?.response?.data?.detail) {
+    return error.response.data.detail
+  }
+
+  if (error?.message) {
     return error.message
   }
 
@@ -409,6 +440,18 @@ export const handleApiError = (error: any): string => {
   }
 
   return 'An unexpected error occurred'
+}
+
+export const isAuthError = (error: any): boolean => {
+  return error?.response?.status === 401 ||
+         error?.message?.includes('401') ||
+         error?.message?.includes('Unauthorized')
+}
+
+export const isRateLimitError = (error: any): boolean => {
+  return error?.response?.status === 429 ||
+         error?.message?.includes('429') ||
+         error?.message?.includes('Too many')
 }
 
 export const saveAuthData = (token: string, user: User): void => {

@@ -19,7 +19,7 @@ import {
   Menu
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
-import { apiClient } from '@/lib/api'
+import { apiClient, BackendChatResponse } from '@/lib/api'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { FaPlus, FaArrowUp } from "react-icons/fa6";
@@ -64,6 +64,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ aiType, aiId }) => {
   const [isLoadingConversations, setIsLoadingConversations] = useState(true)
   const [isHovered, setIsHovered] = useState(false)
   const userDropdownRef = useRef<HTMLDivElement>(null)
+  const [error, setError] = useState('')
+  const clearError = () => setError('')
 
 
   // AI Models configuration
@@ -144,17 +146,19 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ aiType, aiId }) => {
   const loadConversations = async () => {
     try {
       setIsLoadingConversations(true)
-      const response = await apiClient.get<{ conversations: Conversation[] }>('/conversations')
+      const response = await apiClient.getConversations()
+
       const filteredConversations = response.conversations.filter((conv: Conversation) =>
         conv.ai_type === aiType && (!aiId || conv.ai_id === aiId)
       )
       setConversations(filteredConversations)
 
       if (filteredConversations.length > 0 && !currentConversation) {
-        loadConversation(filteredConversations[0].id)
+        await loadConversation(filteredConversations[0].id)
       }
     } catch (error) {
       console.error('Failed to load conversations:', error)
+      setConversations([])
     } finally {
       setIsLoadingConversations(false)
     }
@@ -163,14 +167,19 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ aiType, aiId }) => {
   const loadConversation = async (conversationId: string) => {
     try {
       setCurrentConversation(conversationId)
-      const response = await apiClient.get<{ messages: any[] }>(`/conversations/${conversationId}`)
-      const formattedMessages = response.messages.map((msg: any) => ({
-        ...msg,
+      const response = await apiClient.getConversationMessages(conversationId)
+
+      const formattedMessages: Message[] = response.messages.map((msg: any) => ({
+        id: msg.id,
+        role: msg.role,
+        content: msg.content,
         timestamp: new Date(msg.created_at)
       }))
       setMessages(formattedMessages)
     } catch (error) {
       console.error('Failed to load conversation:', error)
+      setCurrentConversation(null)
+      setMessages([])
     }
   }
     // start a new chat
@@ -178,6 +187,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ aiType, aiId }) => {
     setCurrentConversation(null)
     setMessages([])
     setIsMobileSidebarOpen(false)
+    setError('')
   }
 
   // send a message
@@ -196,7 +206,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ aiType, aiId }) => {
     setIsLoading(true)
 
     try {
-      let response
+      let response: BackendChatResponse
+
       switch (aiType) {
         case 'fire-safety':
           response = await apiClient.chatFireSafety(userMessage.content, 'hybrid', currentConversation)
@@ -207,6 +218,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ aiType, aiId }) => {
         case 'custom':
           if (aiId) {
             response = await apiClient.chatCustomAI(aiId, userMessage.content, 'hybrid', currentConversation)
+          } else {
+            throw new Error('AI ID is required for custom AI')
           }
           break
         default:
@@ -223,14 +236,23 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ aiType, aiId }) => {
 
         setMessages(prev => [...prev, assistantMessage])
 
-        // update current conversation ID if new
+        // Update current conversation ID if new conversation
         if (response.conversation_id && !currentConversation) {
           setCurrentConversation(response.conversation_id)
-          loadConversations() // Refresh conversation list
+          await loadConversations() // Refresh conversation list
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to send message:', error)
+
+      // Add error message to chat
+      const errorMessage: Message = {
+        id: (Date.now() + 2).toString(),
+        role: 'assistant',
+        content: 'I apologize, but I encountered an error. Please try again or check your connection.',
+        timestamp: new Date()
+      }
+      setMessages(prev => [...prev, errorMessage])
     } finally {
       setIsLoading(false)
     }
@@ -350,32 +372,48 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ aiType, aiId }) => {
           <div className="space-y-1">
             {isLoadingConversations ? (
               // loading skeleton (placeholder)
-              Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="h-6 bg-[#3a3a37]/50 rounded-lg animate-pulse" />
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="flex items-center space-x-2 p-2">
+                  <div className="w-4 h-4 bg-[#3a3a37]/50 rounded-full animate-pulse" />
+                  {!isSidebarCollapsed && (
+                    <div className="flex-1 h-4 bg-[#3a3a37]/50 rounded animate-pulse" />
+                  )}
+                </div>
               ))
-            ) : conversations.slice(0, 10).map((conversation) => (
+            ) : conversations.length === 0 ? (
+              !isSidebarCollapsed && (
+                <div className="text-xs text-[#FAF9F5]/40 px-2 py-4 text-center">
+                  No conversations yet
+                </div>
+              )
+            ) : (
+              conversations.slice(0, 10).map((conversation) => (
                 <motion.button
                     key={conversation.id}
                     onClick={() => loadConversation(conversation.id)}
                     className={`${
-                        isSidebarCollapsed ? 'w-7 h-7 -mx-0.5 justify-center mt-6' : 'w-full h-8 p-2'
+                      isSidebarCollapsed ? 'w-7 h-7 -mx-0.5 justify-center mt-6' : 'w-full h-8 p-2'
                     } flex items-center gap-3 rounded-lg hover:bg-[#3a3a37] transition-colors text-left group ${
-                        currentConversation === conversation.id ? 'bg-[#3a3a37]' : ''
+                      currentConversation === conversation.id ? 'bg-[#3a3a37]' : ''
                     }`}
-                    whileHover={{scale: 1.01}}
+                    whileHover={{ scale: 1.01 }}
                 >
                   <div className="w-6 h-6 flex items-center justify-center rounded-full p-1">
-                    <MessageSquare className="w-4 h-4 text-[#FAF9F5]/60"/>
+                    <MessageSquare className="w-4 h-4 text-[#FAF9F5]/60" />
                   </div>
                   {!isSidebarCollapsed && (
                       <div className="flex-1 min-w-0">
                         <p className="text-sm truncate">
                           {conversation.title || conversation.last_message || 'New conversation'}
                         </p>
+                        <p className="text-xs text-[#FAF9F5]/40 truncate">
+                          {new Date(conversation.updated_at).toLocaleDateString()}
+                        </p>
                       </div>
                   )}
                 </motion.button>
-            ))}
+              ))
+            )}
           </div>
         </div>
 
@@ -607,6 +645,25 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ aiType, aiId }) => {
             </motion.div>
           )}
 
+          {error && (
+            <motion.div
+              className="mx-4 mb-4 p-3 bg-red-900/20 border border-red-500/30 rounded-lg text-red-400 text-sm"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
+              <div className="flex items-center justify-between">
+                <span>{error}</span>
+                <button
+                  onClick={clearError}
+                  className="text-red-400 hover:text-red-300 ml-2"
+                >
+                  ×
+                </button>
+              </div>
+            </motion.div>
+          )}
+
           <div ref={messagesEndRef} />
         </div>
 
@@ -621,7 +678,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ aiType, aiId }) => {
                       className="max-h-96 w-full overflow-y-auto font-large break-words transition-opacity duration-200 min-h-[1.5rem]">
                     <textarea
                         value={inputMessage}
-                        onChange={(e) => setInputMessage(e.target.value)}
+                        onChange={(e) => {
+                          setInputMessage(e.target.value)
+                          clearError()
+                        }}
                         onKeyPress={handleKeyPress}
                         placeholder={`Reply to ${currentAI?.title || 'AI'}...`}
                         className="w-full bg-transparent text-[1rem] font-sans border-none text-[#FAF9F5] placeholder-[#FAF9F5]/40 resize-none focus:outline-none break-words max-w-full"

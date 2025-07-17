@@ -27,7 +27,7 @@ export default function ChatPage() {
       icon: <Bot className="w-8 h-8" />,
       title: 'General Assistant',
       description: 'Versatile AI for everyday tasks, questions, and general problem-solving.',
-      isActive: false,
+      isActive: true,
       gradient: 'from-blue-500/20 via-cyan-500/20 to-teal-500/20',
       borderGlow: 'border-blue-500/30 hover:border-blue-400/50',
       iconBg: 'bg-blue-100 dark:bg-blue-900/40',
@@ -68,7 +68,7 @@ export default function ChatPage() {
       return
     }
 
-    router.push(model.route)
+    router.push(`/chat/${model.id}`)
   }
 
   return (<div
@@ -140,7 +140,7 @@ export default function ChatPage() {
                     key={model.id}
                     className={`relative group cursor-pointer transition-all duration-75 ${
                         !model.isActive ? 'opacity-60 cursor-not-allowed' : ''
-                    }`}
+                    } ${model.id === 'custom' && !isAuthenticated ? 'opacity-60' : ''}`}
                     initial={{opacity: 0, y: 20}}
                     animate={{opacity: 1, y: 0}}
                     transition={{delay: index * 0.05, duration: 0.3}}
@@ -222,7 +222,7 @@ export default function ChatPage() {
               animate={{opacity: 1}}
               transition={{delay: 1.2, duration: 0.6}}
           >
-          <div className="flex items-center justify-center gap-2 text-gray-400 text-sm">
+            <div className="flex items-center justify-center gap-2 text-gray-400 text-sm">
               <Sparkles className="w-4 h-4 text-blue-400"/>
               <span>Powered by LightRAG & Cloudflare AI</span>
             </div>
