@@ -67,6 +67,24 @@ export interface FileUploadResponse {
   message: string
 }
 
+export interface AuthResponse {
+  token: string
+  user: User
+  message: string
+}
+
+export interface ApiError {
+  detail: string
+  status_code: number
+}
+
+export interface BackendChatResponse {
+  answer: string
+  mode: string
+  status: string
+  conversation_id?: string
+}
+
 class ApiClient {
   private getAuthHeaders(): HeadersInit {
     const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null
@@ -84,20 +102,71 @@ class ApiClient {
   }
 
   private async handleResponse<T>(response: Response): Promise<T> {
+    if (response.status === 401) {
+      await this.handleAuthError(response)
+    }
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
-      throw new Error(errorData.detail || `HTTP ${response.status}: ${response.statusText}`)
+      throw new Error(errorData.detail || errorData.message || `HTTP ${response.status}: ${response.statusText}`)
     }
     return response.json()
   }
 
+  private async handleAuthError(response: Response): Promise<void> {
+    if (response.status === 401) {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('auth_token')
+        localStorage.removeItem('auth_user')
+      }
+      window.dispatchEvent(new CustomEvent('auth-required'))
+    }
+  }
+
+  private async refreshToken(): Promise<string | null> {
+    try {
+      const refreshToken = localStorage.getItem('refresh_token')
+      if (!refreshToken) return null
+
+      const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refreshToken })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        localStorage.setItem('auth_token', data.token)
+        return data.token
+      }
+      return null
+    } catch {
+      return null
+    }
+  }
+
   async post<T>(endpoint: string, data?: any): Promise<T> {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'POST',
-      headers: this.getAuthHeaders(),
-      body: JSON.stringify(data),
-    })
-    return this.handleResponse<T>(response)
+    try {
+      const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'POST',
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify(data),
+      })
+      return this.handleResponse<T>(response)
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('401')) {
+        const newToken = await this.refreshToken()
+        if (newToken) {
+          const retryResponse = await fetch(`${API_BASE_URL}${endpoint}`, {
+            method: 'POST',
+            headers: this.getAuthHeaders(),
+            body: JSON.stringify(data),
+          })
+          return this.handleResponse<T>(retryResponse)
+        }
+      }
+      throw error
+    }
   }
 
   async get<T>(endpoint: string): Promise<T> {
@@ -132,19 +201,19 @@ class ApiClient {
   }
 
   // authentication
-  async register(email: string, name: string): Promise<{ user: User; token: string; message: string }> {
-    return this.post('/auth/register', { email, name })
+  async register(email: string, name: string, password: string): Promise<{ user: User; token: string; message: string }> {
+    return this.post('/auth/register', { email, name, password })
   }
 
-  async login(email: string): Promise<{ user: User; token: string; message: string }> {
-    return this.post('/auth/login', { email })
+  async login(email: string, password: string): Promise<{ user: User; token: string; message: string }> {
+    return this.post('/auth/login', { email, password })
   }
 
   async chatFireSafety(
     question: string,
     mode: string = 'hybrid',
     conversationId?: string | null
-  ): Promise<ChatResponse> {
+  ): Promise<BackendChatResponse> {
     return this.post('/chat/fire-safety', {
       question,
       mode,
@@ -156,7 +225,7 @@ class ApiClient {
     question: string,
     mode: string = 'hybrid',
     conversationId?: string | null
-  ): Promise<ChatResponse> {
+  ): Promise<BackendChatResponse> {
     return this.post('/chat/general', {
       question,
       mode,
@@ -169,7 +238,7 @@ class ApiClient {
     question: string,
     mode: string = 'hybrid',
     conversationId?: string | null
-  ): Promise<ChatResponse> {
+  ): Promise<BackendChatResponse> {
     return this.post(`/chat/custom/${aiId}`, {
       question,
       mode,
@@ -244,6 +313,29 @@ class ApiClient {
   // legacy support (for the demo ai chat)
   async ask(question: string, mode: string = 'hybrid'): Promise<ChatResponse> {
     return this.post('/ask', { question, mode })
+  }
+}
+
+export const checkApiHealth = async (): Promise<boolean> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/health`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' }
+    })
+    return response.ok
+  } catch (error) {
+    console.error('API health check failed:', error)
+    return false
+  }
+}
+
+export const getSystemStatus = async (): Promise<any> => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/system/status`)
+    return response.json()
+  } catch (error) {
+    console.error('System status check failed:', error)
+    return { status: 'unavailable' }
   }
 }
 
@@ -369,17 +461,6 @@ export const getConversationPreview = (messages: any[]): string => {
   const preview = lastMessage.content || ''
 
   return formatConversationTitle(preview, 100)
-}
-
-
-export const checkApiHealth = async (): Promise<boolean> => {
-  try {
-    const health = await apiClient.getHealth()
-    return health.status === 'healthy'
-  } catch (error) {
-    console.error('API health check failed:', error)
-    return false
-  }
 }
 
 export const checkLightRagStatus = async (): Promise<{
