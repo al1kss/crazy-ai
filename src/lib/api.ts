@@ -20,6 +20,11 @@ export interface CustomAI {
   files_count: number
   persistent_storage: boolean
   lightrag_python: boolean
+  icon?: string
+  total_tokens?: number
+  knowledge_size?: number
+  user_id?: string
+  is_active?: boolean
 }
 
 export interface ChatResponse {
@@ -283,6 +288,18 @@ class ApiClient {
 
   async getMyAIs(): Promise<{ ais: CustomAI[]; count: number }> {
     return this.get('/my-ais')
+  }
+
+  async updateCustomAI(aiId: string, data: { name?: string; description?: string; icon?: string }): Promise<any> {
+    return this.post(`/custom-ai/${aiId}/update`, data)
+  }
+
+  async deleteCustomAI(aiId: string): Promise<{ message: string }> {
+    return this.delete(`/custom-ai/${aiId}`)
+  }
+
+  async getCustomAIDetails(aiId: string): Promise<CustomAI> {
+    return this.get(`/custom-ai/${aiId}`)
   }
 
   async getConversations(): Promise<{ conversations: any[] }> {

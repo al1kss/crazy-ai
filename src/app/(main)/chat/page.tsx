@@ -49,7 +49,7 @@ export default function ChatPage() {
     {
       id: 'custom',
       icon: <Hammer className="w-8 h-8" />,
-      title: 'Build Your Own',
+      title: 'Build YourAI',
       description: 'Upload your knowledge base and create personalized AI assistants.',
       isActive: true,
       gradient: 'from-emerald-500/20 via-green-500/20 to-lime-500/20',
@@ -63,7 +63,7 @@ export default function ChatPage() {
   const handleModelSelect = (model: typeof aiModels[0]) => {
     if (!model.isActive) return
 
-    if (model.id === 'custom' && !isAuthenticated) {
+    if (!isAuthenticated) {
       alert('Please sign in to create custom AI assistants')
       return
     }
