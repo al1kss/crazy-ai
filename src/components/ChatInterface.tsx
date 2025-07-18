@@ -84,7 +84,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ aiType, aiId }) => {
       icon: <Bot className="w-4 h-4" />,
       title: 'General Assistant',
       description: 'Versatile AI for everyday tasks',
-      isActive: false,
+      isActive: true,
       iconBg: 'bg-blue-100 dark:bg-blue-900/40',
       iconColor: 'text-blue-600 dark:text-blue-400',
     },

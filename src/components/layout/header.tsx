@@ -40,7 +40,7 @@ const Header = () => {
       icon: <GeneralBot className="w-5 h-5" />,
       title: 'General Assistant',
       description: 'Versatile AI for everyday tasks, questions, and general problem-solving.',
-      isActive: false,
+      isActive: true,
       route: '/chat/general',
       gradient: 'from-blue-500/20 via-cyan-500/20 to-teal-500/20',
       borderGlow: 'border-blue-500/30 hover:border-blue-400/50',
