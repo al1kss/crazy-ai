@@ -269,12 +269,12 @@ const CustomAIModal: React.FC<CustomAIModalProps> = ({ isOpen, onClose, onSucces
       setProcessingProgress(100)
 
       setTimeout(() => {
-        onSuccess(result.ai_id)
         setIsProcessing(false)
         onClose()
         setFiles([])
         setAiName('')
         setDescription('')
+        window.location.href = `/chat/custom/${result.ai_id}`
       }, 1000)
 
     } catch (err: any) {

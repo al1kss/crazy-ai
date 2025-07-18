@@ -15,16 +15,17 @@ export interface User {
 export interface CustomAI {
   id: string
   name: string
-  description: string
+  description?: string
   created_at: string
   files_count: number
-  persistent_storage: boolean
-  lightrag_python: boolean
+  persistent_storage?: boolean
+  lightrag_python?: boolean
   icon?: string
   total_tokens?: number
   knowledge_size?: number
   user_id?: string
   is_active?: boolean
+  file_count?: number
 }
 
 export interface ChatResponse {

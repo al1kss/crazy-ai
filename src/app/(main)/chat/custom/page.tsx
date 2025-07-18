@@ -67,7 +67,7 @@ export default function CustomChatPage() {
   const loadCustomAIs = async () => {
     try {
       setIsLoading(true)
-      const response = await apiClient.getMyAIs()
+      const response = await apiClient.getMyAIs() as { ais: CustomAI[]; count: number }
       setCustomAIs(response.ais)
 
       if (response.ais.length > 0 && !selectedAI) {
@@ -82,9 +82,9 @@ export default function CustomChatPage() {
 
   const handleCreateSuccess = async (aiId: string) => {
     await loadCustomAIs()
-    setSelectedAI(aiId)
     setIsModalOpen(false)
     setEditingAI(null)
+    router.push(`/chat/custom/${aiId}`)
   }
 
   const handleEditAI = (ai: CustomAI) => {
@@ -122,10 +122,6 @@ export default function CustomChatPage() {
 
   if (!isAuthenticated) {
     return null
-  }
-
-  if (selectedAI) {
-    return <ChatInterface aiType="custom" aiId={selectedAI} />
   }
 
   return (
@@ -232,7 +228,7 @@ export default function CustomChatPage() {
               </p>
 
               <motion.button
-                className="group inline-flex items-center gap-3 bg-gradient-to-r from-neon-pink to-neon-blue text-soft-cream px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-2xl hover:shadow-neon-pink/50 transition-all duration-300"
+                className="group inline-flex items-center gap-3 bg-gradient-to-r from-neon-pink to-neon-blue text-soft-cream px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-2xl hover:shadow-neon-pink/50 transition-all duration-100"
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsModalOpen(true)}
@@ -250,7 +246,7 @@ export default function CustomChatPage() {
               return (
                 <motion.div
                   key={ai.id}
-                  className="group relative bg-bg-tertiary/30 backdrop-blur-md border border-soft-charcoal/30 rounded-2xl p-6 card-hover hover:border-neon-pink/50 transition-all duration-300 cursor-pointer"
+                  className="group relative bg-bg-tertiary/30 backdrop-blur-md border border-soft-charcoal/30 rounded-2xl p-6 card-hover hover:border-neon-pink/50 transition-all duration-100 cursor-pointer"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
@@ -268,10 +264,10 @@ export default function CustomChatPage() {
                   <div className="relative z-10">
                     <div className="flex items-start justify-between mb-4">
                       <motion.div
-                        className="w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
+                        className="w-12 h-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-100"
                         style={{ backgroundColor: color + '20' }}
                         whileHover={{ rotate: 360 }}
-                        transition={{ duration: 0.6 }}
+                        transition={{ duration: 0.2 }}
                       >
                         <IconComponent
                           className="w-6 h-6"
