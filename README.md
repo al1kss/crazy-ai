@@ -1,105 +1,212 @@
+# YourAI 🤖✨
 
-# [Next.js Enterprise Boilerplate](https://blazity.com/open-source/nextjs-enterprise-boilerplate) 
+<div align="center">
 
-A production-ready template for building enterprise applications with Next.js. This boilerplate provides a solid foundation with carefully selected technologies and ready-to-go infrastructure to help you develop high-quality applications efficiently.
+![YourAI Banner](https://img.shields.io/badge/YourAI-Next%20Generation%20AI%20Assistant-FF6B9D?style=for-the-badge&logo=openai&logoColor=white)
 
-## Motivation
+[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![LightRAG](https://img.shields.io/badge/LightRAG-Enhanced-4ECDC4?style=flat-square&logo=python&logoColor=white)](https://github.com/HKUDS/LightRAG)
+[![Cloudflare](https://img.shields.io/badge/Cloudflare-Workers%20AI-F38020?style=flat-square&logo=cloudflare&logoColor=white)](https://developers.cloudflare.com/workers-ai/)
+[![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?style=flat-square&logo=vercel&logoColor=white)](https://vercel.com)
 
-While most Next.js boilerplates focus on individual developer needs with excessive complexity, **next-enterprise** prioritizes strategic simplicity for enterprise teams. It offers a streamlined foundation with high-impact features that maximize developer productivity and accelerate time-to-market for business-critical applications.
+**🌟 [Live Demo](https://sw-crazy-ai.vercel.app/) | 🔗 [Backend API](https://al1kss-safetyai.hf.space/) | 🚀 [GitHub Repo](https://github.com/al1kss/crazy-ai)**
 
-<a href="https://blazity.com/">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="/assets/blazity-logo-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="/assets/blazity-logo-light.svg">
-  <img alt="Logo" align="right" height="80" src="/assets/blazity-logo-light.svg">
-</picture>
-</a>
+*Transform your workflow with intelligent AI assistants made for professionals and enthusiasts*
 
-> [!NOTE]
-> **Blazity** is a group of Next.js architects. We help organizations architect, optimize, and deploy high-performance Next.js applications at scale. Contact us at [contact@blazity.com](https://blazity.com) if you’d like to talk about your project.
+</div>
 
+---
 
+## 🎯 What Makes YourAI Special?
 
-## Documentation
+Hey! Let me tell you what makes YourAI different from your typical AI chatbot or a wrapper
 
-There is a separate documentation that explains its functionality, highlights core business values and technical decisions, provides guidelines for future development, and includes architectural diagrams.
+### 🚀 Contributing to Open Source
+I'm proud to have contributed a **major feature** to the [LightRAG project](https://github.com/HKUDS/LightRAG/pull/1765) - the first-ever **Cloudflare Workers AI integration**! 
 
-We encourage you to [visit our docs (docs.blazity.com)](https://docs.blazity.com) to learn more
+**What's LightRAG?** Think of it as a super-smart way for AI to understand and remember information. Instead of just dumping text into AI, LightRAG creates a "knowledge graph" - like a web of connected ideas that helps AI give you much better, more contextual answers.
 
-## Integrated features
+**My Contribution:** Before my integration, LightRAG users had to run everything manually on their computers, which was pretty limiting. I created a seamless bridge between LightRAG and Cloudflare's global edge network, meaning:
+- ⚡ **Serverless deployment** - No heavy server requirements
+- 🌍 **Global accessibility** - Millions can now use LightRAG without local setup
+- 🔄 **Smart fallbacks** - If one AI model fails, it automatically tries others
+- 💨 **Lightning fast** - Powered by Cloudflare's edge network
 
-### Boilerplate
-With this template you will get all the boilerplate features included:
+### 🎨 Built From Scratch, With Love
+Here's the thing - when most people think "AI chat app," they imagine grabbing some pre-built components and calling it a day. **Not here!** Every single interface, every animation, every chat bubble was crafted by hand:
 
-* [Next.js 15](https://nextjs.org/) - Performance-optimized configuration using App Directory
-* [Tailwind CSS v4](https://tailwindcss.com/) - Utility-first CSS framework for efficient UI development
-* [ESlint 9](https://eslint.org/) and [Prettier](https://prettier.io/) - Code consistency and error prevention
-* [Corepack](https://github.com/nodejs/corepack) & [pnpm](https://pnpm.io/) as the package manager - For project management without compromises 
-* [Strict TypeScript](https://www.typescriptlang.org/) - Enhanced type safety with carefully crafted config and [ts-reset](https://github.com/total-typescript/ts-reset) library
-* [GitHub Actions](https://github.com/features/actions) - Pre-configured workflows including bundle size and performance tracking
-* Perfect Lighthouse score - Optimized performance metrics
-* [Bundle analyzer](https://www.npmjs.com/package/@next/bundle-analyzer) - Monitor and manage bundle size during development
-* Testing suite - [Jest](https://jestjs.io/), [React Testing Library](https://testing-library.com/react), and [Playwright](https://playwright.dev/) for comprehensive testing
-* [Storybook](https://storybook.js.org/) - Component development and documentation
-* Advanced testing - Smoke and acceptance testing capabilities
-* [Conventional commits](https://www.conventionalcommits.org/) - Standardized commit history management
-* [Observability](https://opentelemetry.io/) - Open Telemetry integration
-* [Absolute imports](https://nextjs.org/docs/advanced-features/module-path-aliases) - Simplified import structure
-* [Health checks](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) - Kubernetes-compatible monitoring
-* [Radix UI](https://www.radix-ui.com/) - Headless components for customization
-* [CVA](http://cva.style/) (Class Variance Authority) - Consistent design system creation
-* [Renovate BOT](https://www.whitesourcesoftware.com/free-developer-tools/renovate) - Automated dependency and security updates
-* [Patch-package](https://www.npmjs.com/package/patch-package) - External dependency fixes without compromises
-* Component relationship tools - Graph for managing coupling and cohesion
-* [Semantic Release](https://github.com/semantic-release/semantic-release) - Automated changelog generation
-* [T3 Env](https://env.t3.gg/) - Streamlined environment variable management
+- 🎭 **Custom Chat UI** - No generic chat components here
+- 📝 **Markdown Interpreter** - AI responses come beautifully formatted
+- 🎪 **Animated Components** - Smooth, delightful interactions everywhere
+- 🎨 **Modern Design System** - Custom color schemes with neon glows and blur effects
+- 📱 **Responsive Design** - Works perfectly on any device
 
-### Infrastructure & deployments
+---
 
-#### Vercel
+## ✨ Core Features
 
-Easily deploy your Next.js app with [Vercel](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=github&utm_campaign=next-enterprise) by clicking the button below:
+### 🤖 Multiple AI Assistants
+- **🔥 Fire Safety Expert** - Specialized in safety regulations and procedures
+- **🧠 General Assistant** - Your everyday AI companion
+- **⚗️ Physics Tutor** - Advanced physics concepts and problem-solving
+- **🛠️ Build Your Own** - Upload knowledge files and create custom AI assistants
 
-[![Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/Blazity/next-enterprise)
+### 🔐 Enterprise-Grade Security
+- **JWT Authentication** - Secure token-based user sessions
+- **Password Hashing** - bcrypt encryption for user data
+- **Session Management** - Automatic token refresh and expiration
 
-#### Custom cloud infrastructure
+### 💾 Smart Memory System
+- **Conversation Persistence** - Your chats are saved and searchable
+- **Knowledge Graphs** - AI remembers context across conversations
+- **File Upload Support** - PDF, TXT, MD, JSON, DOCX knowledge integration
 
-**next-enterprise** offers dedicated infrastructure as code (IaC) solutions built with Terraform, designed specifically for deploying Next.js applications based on our extensive experience working with enterprise clients.
+### 🚀 Advanced RAG Implementation
+- **Hybrid Query Modes** - Local, global, hybrid, and naive search
+- **Fallback System** - Automatic model switching for reliability
+- **Real-time Processing** - Live knowledge base updates
 
-Learn more in our [documentation (docs.blazity.com)][docs] how to quickstart with the deployments using simple CLI.
+---
 
-#### Available cloud providers and theirs features:
+## 🛠️ Tech Stack
 
-* **AWS (Amazon Web Services)**
-  * Automated provisioning of AWS infrastructure
-  * Scalable & secure setup using:
-     * VPC - Isolated network infrastructure
-     * Elastic Container Service (ECS) - Container orchestration
-     * Elastic Container Registry (ECR) - Container image storage
-     * Application Load Balancer - Traffic distribution
-     * S3 + CloudFront - Static asset delivery and caching
-     * AWS WAF - Web Application Firewall protection
-     * Redis Cluster - Caching
-  * CI/CD ready - Continuous integration and deployment pipeline
+### Frontend
+- **Next.js 15** - React framework with App Router
+- **TypeScript** - Type-safe development
+- **Tailwind CSS** - Utility-first styling
+- **Framer Motion** - Smooth animations
+- **Lucide React** - Beautiful icons
 
-*... more coming soon*
+### Backend & Infrastructure
+- **Python FastAPI** - High-performance backend
+- **LightRAG** - Advanced RAG implementation
+- **Cloudflare Workers AI** - Serverless AI processing
+- **PostgreSQL** - Reliable data storage
+- **Redis** - Fast caching layer
+- **Vercel Blob** - File storage solution
 
-### Team & maintenance
+---
 
-**next-enterprise** is backed and maintained by [Blazity](https://blazity.com), providing up to date security features and integrated feature updates.
+## 🚀 Quick Start
 
-#### Active maintainers
+Ready to dive in? Here's how to get YourAI running locally:
 
-- Igor Klepacki ([neg4n](https://github.com/neg4n)) - Open Source Software Developer
-- Tomasz Czechowski ([tomaszczechowski](https://github.com/tomaszczechowski)) - Solutions Architect & DevOps
-- Jakub Jabłoński ([jjablonski-it](https://github.com/jjablonski-it)) - Head of Integrations
+### Prerequisites
+- Node.js 18+ and pnpm
+- Git
 
-#### All-time contributors
-[bmstefanski](https://github.com/bmstefanski)
+### Installation
 
-## License
+```bash
+# Clone the repository
+git clone https://github.com/al1kss/crazy-ai.git
+cd crazy-ai
 
-MIT
+# Install dependencies
+pnpm install
 
+# Start the development server
+npm run dev
+```
 
-[docs]: https://docs.blazity.com/next-enterprise/deployments/enterprise-cli
+That's it! 🎉 Open [http://localhost:3000](http://localhost:3000) and start chatting with your AI assistants.
+
+### Environment Variables
+The app will work out of the box, but for full functionality, you'll need:
+
+```env
+# Authentication
+JWT_SECRET_KEY=your_jwt_secret
+
+# Database (auto-created)
+DATABASE_URL=your_postgres_url
+REDIS_URL=your_redis_url
+
+# Cloudflare AI
+CLOUDFLARE_API_KEY=your_cloudflare_key
+CLOUDFLARE_ACCOUNT_ID=your_account_id
+
+# Storage
+BLOB_READ_WRITE_TOKEN=your_vercel_blob_token
+```
+
+---
+
+## 🏗️ Architecture
+
+### Frontend Architecture
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── (main)/            # Main site pages
+│   ├── (chat)/            # Chat interfaces
+│   └── api/               # API routes
+├── components/             # Reusable UI components
+├── contexts/              # React context providers
+└── lib/                   # Utilities and configurations
+```
+
+### Backend Highlights
+- **Persistent LightRAG** - Knowledge graphs stored in Vercel Blob + PostgreSQL
+- **Multi-Model Fallback** - Automatic switching between AI models
+- **Real-time Processing** - Streaming responses and live updates
+- **Memory Management** - Conversation history and context retention
+
+---
+
+## 🌟 What Makes This Special?
+
+### For Technical Folks:
+- **First Cloudflare-LightRAG Integration** - Pioneering serverless RAG deployment
+- **Custom Chat Architecture** - No pre-built chat libraries used
+- **Advanced State Management** - React Context + PostgreSQL + Redis
+- **Responsive Design System** - Custom Tailwind configuration with animations
+
+### For Everyone Else:
+Imagine if ChatGPT could remember everything you've ever told it, had specialized knowledge in specific fields, and looked absolutely stunning while doing it, by it I mean taking a few seconds to find that exact information showing where it got that information from, and with relationships shown to link and explain better. That's YourAI! 
+
+Plus, unlike other AI apps that feel generic, every pixel here was designed with care. The gentle animations, the smooth transitions, the way text appears... it all comes together to create something that feels magical to use.
+
+---
+
+## 🤝 Contributing
+
+Found a bug? Have an idea? I'd love to hear from you!
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🎭 Final Thoughts
+
+You know what's funny? When I started this project, I thought building AI apps meant plugging into some API and getting a basic chat interface for free. Boy, was I wrong! 😅
+
+Creating beautiful, responsive chat interfaces turned out to be an art form. Getting AI responses to format properly with markdown, making animations smooth, ensuring everything works on mobile, handling file uploads, managing user sessions... every single piece had to be built from scratch.
+
+But that's what makes YourAI special. It's not just another AI wrapper - it's a carefully crafted experience that shows what's possible when you combine cutting-edge AI technology with thoughtful design and engineering.
+
+Hope you enjoy using it as much as I enjoyed building it! 🚀
+
+---
+
+<div align="center">
+
+**Made with ❤️ by [Alikhan Abdykaimov](https://github.com/al1kss)**
+
+[![GitHub](https://img.shields.io/badge/GitHub-al1kss-181717?style=flat-square&logo=github)](https://github.com/al1kss)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/alikhan-abdykaimov/)
+
+*Star ⭐ this repo if you found it helpful!*
+
+</div>
