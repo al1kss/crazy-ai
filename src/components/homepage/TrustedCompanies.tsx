@@ -194,7 +194,7 @@ const TrustedCompanies = () => {
                     href={company.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group relative flex-shrink-0 w-64 h-40 flex items-center justify-center p-8 rounded-2xl mt-5 bottom-2.5 backdrop-blur-sm bg-white/5 border border-white/10 hover:bg-gray-500/10 hover:border-neon-pink/30 transition-all duration-300"
+                    className="group relative flex-shrink-0 w-72 h-48 flex items-center justify-center p-8 rounded-2xl mt-5 bottom-2.5 backdrop-blur-sm bg-blue-950/10 border border-white/10 hover:bg-gray-500/10 hover:border-neon-pink/30 transition-all duration-300"
                     whileHover={{
                       scale: 1.05,
                       y: -8,
