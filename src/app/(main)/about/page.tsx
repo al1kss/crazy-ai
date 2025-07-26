@@ -155,7 +155,7 @@ const AboutPage = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2, duration: 0.8 }}
           >
-            <div className="bg-bg-tertiary/30 backdrop-blur-md border border-soft-charcoal/30 rounded-2xl p-8 card-hover h-[737px]">
+            <div className="bg-bg-tertiary/30 backdrop-blur-md border border-soft-charcoal/30 rounded-2xl p-8 card-hover h-[763px]">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-gradient-to-br from-neon-pink/20 to-neon-blue/20 rounded-xl flex items-center justify-center">
                   <Brain className="w-6 h-6 text-neon-blue" />
