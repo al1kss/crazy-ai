@@ -27,7 +27,7 @@ const Footer = () => {
       title: "AI Models",
       links: [
         { name: "Fire Safety AI", href: "chat/fire-safety", icon: "🔥" },
-        { name: "General Assistant", href: "chat/general", icon: "🤖", disabled: true },
+        { name: "General Assistant", href: "chat/general", icon: "🤖" },
         { name: "Physics Expert", href: "chat/physics", icon: "🧠", disabled: true },
         { name: "Build Your Own", href: "chat/custom", icon: "🛠️" },
       ],
