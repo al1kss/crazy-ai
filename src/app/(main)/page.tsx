@@ -5,6 +5,7 @@ import { motion, useInView } from 'framer-motion'
 import { ArrowRight, Bot, Brain, Flame, Hammer, Sparkles } from 'lucide-react'
 import { Analytics } from "@vercel/analytics/next"
 import LiveStats from '../../components/homepage/stats'
+import Link from "next/link";
 
 const useTypingEffect = (words: string[], speed = 110, delayBetweenWords = 2000) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0)
@@ -148,30 +149,33 @@ export default function HomePage() {
               animate={{opacity: 1, y: 0}}
               transition={{delay: 1.0, duration: 0.6}}
           >
-            <motion.button
-                className="group relative bg-gradient-to-r from-neon-pink to-neon-blue text-soft-cream font-semibold px-8 py-4 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-neon-pink/50"
-                whileHover={{scale: 1.05}}
-                whileTap={{scale: 0.95}}
-            >
-              <span className="relative z-10 flex items-center gap-2">
-                Start Chatting
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/>
-              </span>
-              <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-neon-blue to-neon-pink"
-                  initial={{x: "100%"}}
-                  whileHover={{x: "0%"}}
-                  transition={{duration: 0.3}}
-              />
-            </motion.button>
-
-            <motion.button
-                className="border border-neon-blue/50 text-neon-blue font-semibold px-8 py-4 rounded-xl hover:bg-neon-blue/10 transition-all duration-300 hover:border-neon-blue hover:shadow-lg hover:shadow-neon-blue/25"
-                whileHover={{scale: 1.05}}
-                whileTap={{scale: 0.95}}
-            >
-              Learn More
-            </motion.button>
+            <Link href="/chat" className="w-full sm:w-auto">
+              <motion.button
+                  className="group relative bg-gradient-to-r from-neon-pink to-neon-blue text-soft-cream font-semibold px-8 py-4 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-neon-pink/50"
+                  whileHover={{scale: 1.05}}
+                  whileTap={{scale: 0.95}}
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  Start Chatting
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform"/>
+                </span>
+                <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-neon-blue to-neon-pink"
+                    initial={{x: "100%"}}
+                    whileHover={{x: "0%"}}
+                    transition={{duration: 0.3}}
+                />
+              </motion.button>
+            </Link>
+            <Link href="/about" className="w-full sm:w-auto">
+              <motion.button
+                  className="border border-neon-blue/50 text-neon-blue font-semibold px-8 py-4 rounded-xl hover:bg-neon-blue/10 transition-all duration-300 hover:border-neon-blue hover:shadow-lg hover:shadow-neon-blue/25"
+                  whileHover={{scale: 1.05}}
+                  whileTap={{scale: 0.95}}
+              >
+                Learn More
+              </motion.button>
+            </Link>
           </motion.div>
         </motion.div>
 
@@ -217,7 +221,7 @@ export default function HomePage() {
                 icon={<Bot/>}
                 title="General Assistant"
                 description="Versatile AI for everyday tasks, questions, and general problem-solving."
-                comingSoon={true}
+                isActive={true}
             />
             <AIModelCard
                 icon={<Brain/>}
@@ -229,7 +233,7 @@ export default function HomePage() {
                 icon={<Hammer/>}
                 title="Custom AI Builder"
                 description="Upload your knowledge base and create personalized AI assistants."
-                comingSoon={true}
+                isActive={true}
             />
           </div>
         </motion.div>
