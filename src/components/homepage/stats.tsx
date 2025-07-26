@@ -80,9 +80,9 @@ const StatCard = ({ stat, index, isInView }: {
         stiffness: 100
       }}
     >
-      <div className="relative bg-bg-tertiary/30 backdrop-blur-md border border-soft-charcoal/30 rounded-2xl p-6 card-hover group-hover:border-neon-pink/50 transition-all duration-300">
+      <div className="relative bg-bg-tertiary/30 backdrop-blur-md border border-soft-charcoal/30 rounded-2xl p-6 card-hover group-hover:border-neon-pink/50 transition-all duration-150">
         <motion.div
-          className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+          className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-150"
           style={{
             background: `radial-gradient(circle at center, ${stat.color}15 0%, transparent 70%)`,
             filter: 'blur(10px)',
@@ -91,7 +91,7 @@ const StatCard = ({ stat, index, isInView }: {
 
         <div className="relative z-10">
           <motion.div
-            className="inline-flex p-3 rounded-xl mb-4 group-hover:scale-110 transition-transform duration-300"
+            className="inline-flex p-3 rounded-xl mb-4 group-hover:scale-110 transition-transform duration-150"
             style={{
               background: `linear-gradient(135deg, ${stat.color}20, ${stat.color}10)`,
               color: stat.color
