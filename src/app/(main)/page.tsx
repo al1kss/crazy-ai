@@ -6,6 +6,7 @@ import { ArrowRight, Bot, Brain, Flame, Hammer, Sparkles } from 'lucide-react'
 import { Analytics } from "@vercel/analytics/next"
 import LiveStats from '../../components/homepage/stats'
 import Link from "next/link";
+import TrustedCompanies from "@/components/homepage/TrustedCompanies";
 
 const useTypingEffect = (words: string[], speed = 110, delayBetweenWords = 2000) => {
   const [currentWordIndex, setCurrentWordIndex] = useState(0)
@@ -178,6 +179,8 @@ export default function HomePage() {
             </Link>
           </motion.div>
         </motion.div>
+
+        <TrustedCompanies />
 
         <motion.div
           className="z-10 w-full max-w-6xl mx-auto mb-10 bottom-10"
