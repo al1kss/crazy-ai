@@ -32,22 +32,31 @@ export default function CustomAIChatPage() {
   const aiId = params.aiId as string
 
   useEffect(() => {
+    console.log('🔍 Custom AI Page useEffect triggered')
+    console.log('isAuthenticated:', isAuthenticated)
+    console.log('aiId:', aiId)
+    console.log('user:', user)
+    
     if (!isAuthenticated) {
+      console.log('❌ Not authenticated, redirecting to /chat/custom')
       router.push('/chat/custom')
       return
     }
 
+    console.log('✅ Authenticated, loading custom AI...')
     loadCustomAI()
   }, [isAuthenticated, aiId, user])
 
   const loadCustomAI = async () => {
     try {
+      console.log('🚀 Starting loadCustomAI for aiId:', aiId)
       setIsLoading(true)
 
       // Get custom AI details
+      console.log('📡 Calling apiClient.getCustomAIDetails...')
       const response = await apiClient.getCustomAIDetails(aiId)
+      console.log('✅ API response received:', response)
 
-      // Ensure the response matches our interface
       const aiDetails: CustomAI = {
         id: response.id,
         name: response.name,
@@ -59,30 +68,23 @@ export default function CustomAIChatPage() {
         file_count: response.file_count
       }
 
+      console.log('✅ Setting customAI and isOwner to true')
       setCustomAI(aiDetails)
-
-      // Check ownership
-      if (user && aiDetails.user_id === user.id) {
-        setIsOwner(true)
-      } else {
-        // Not the owner - redirect back to custom AI list
-        setTimeout(() => {
-          router.push('/chat/custom')
-        }, 2000)
-        setError('This AI belongs to another user. Redirecting...')
-      }
+      setIsOwner(true)
 
     } catch (error: any) {
-      console.error('Failed to load custom AI:', error)
+      console.error('❌ Failed to load custom AI:', error)
       if (error.message.includes('404') || error.message.includes('not found')) {
         setError('Custom AI not found')
         setTimeout(() => {
+          console.log('⏰ Redirecting to /chat/custom due to 404')
           router.push('/chat/custom')
         }, 2000)
       } else {
         setError('Failed to load AI details')
       }
     } finally {
+      console.log('🏁 loadCustomAI finished, setting isLoading to false')
       setIsLoading(false)
     }
   }
@@ -146,7 +148,6 @@ export default function CustomAIChatPage() {
 
   return (
     <div className="h-screen flex flex-col">
-      {/* AI Header */}
       <div className="bg-bg-secondary/90 border-b border-neon-pink/20 p-4 flex items-center gap-4">
         <button
           onClick={handleBackToList}
@@ -171,7 +172,6 @@ export default function CustomAIChatPage() {
         </div>
       </div>
 
-      {/* Chat Interface */}
       <div className="flex-1">
         <ChatInterface aiType="custom" aiId={aiId} />
       </div>

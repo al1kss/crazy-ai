@@ -142,6 +142,7 @@ class ApiClient {
 
   private async handleAuthError(response: Response): Promise<void> {
     if (response.status === 401) {
+      console.log('error 401: Unauthorized access, attempting to refresh token')
       if (typeof window !== 'undefined') {
         localStorage.removeItem('auth_token')
         localStorage.removeItem('auth_user')
