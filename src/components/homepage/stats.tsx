@@ -13,6 +13,16 @@ interface StatItem {
   color: string
 }
 
+interface ApiStatsResponse {
+  total_users: number
+  total_ais: number
+  total_messages: number
+  lines_of_code_generated: number
+  last_updated: string
+}
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://al1kss-safetyai.hf.space'
+
 const useCountUp = (end: number, duration: number = 2, shouldStart: boolean = false) => {
   const [count, setCount] = useState(0)
 
@@ -54,19 +64,7 @@ const StatCard = ({ stat, index, isInView }: {
   isInView: boolean
 }) => {
   const animatedValue = useCountUp(stat.value, 2.5, isInView)
-  const [realTimeValue, setRealTimeValue] = useState(stat.value)
-
-  useEffect(() => {
-    if (!isInView) return
-
-    const interval = setInterval(() => {
-      setRealTimeValue(prev => prev + Math.floor(Math.random() * stat.increment) + 1)
-    }, Math.random() * 5000 + 3000)
-
-    return () => clearInterval(interval)
-  }, [isInView, stat.increment])
-
-  const displayValue = isInView ? (animatedValue === stat.value ? realTimeValue : animatedValue) : 0
+  const displayValue = isInView ? animatedValue : 0
 
   return (
     <motion.div
@@ -124,33 +122,106 @@ const StatCard = ({ stat, index, isInView }: {
 const LiveStats = () => {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const [apiStats, setApiStats] = useState<ApiStatsResponse | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const stats: StatItem[] = [
+  const fetchStats = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/stats`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
+      const data: ApiStatsResponse = await response.json()
+      setApiStats(data)
+      setError(null)
+    } catch (err) {
+      console.error('Failed to fetch stats:', err)
+      setError('Failed to load stats')
+      setApiStats(null)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchStats()
+  }, [])
+
+  useEffect(() => {
+    const interval = setInterval(fetchStats, 20000) //update every 20 seconds
+    return () => clearInterval(interval)
+  }, [])
+
+  const stats: StatItem[] = apiStats ? [
     {
       id: 'lines-of-code',
       label: 'Lines of Code Generated',
-      value: 2456789,
+      value: apiStats.lines_of_code_generated,
       icon: <Code className="w-6 h-6" />,
-      increment: 50,
+      increment: 0,
       color: '#FF6B9D',
     },
     {
       id: 'active-users',
       label: 'Active Users',
-      value: 12345,
+      value: apiStats.total_users,
       icon: <Users className="w-6 h-6" />,
-      increment: 3,
+      increment: 0,
       color: '#4ECDC4',
     },
     {
       id: 'chats-created',
       label: 'New Chats Created',
-      value: 89234,
+      value: apiStats.total_messages,
       icon: <MessageCircle className="w-6 h-6" />,
-      increment: 25,
+      increment: 0,
       color: '#A8E6CF',
     },
-  ]
+  ] : []
+
+  if (isLoading) {
+    return (
+      <section ref={ref} className="relative py-20 px-4 z-10">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="bg-bg-tertiary/30 backdrop-blur-md border border-soft-charcoal/30 rounded-2xl p-6 animate-pulse">
+                <div className="w-12 h-12 bg-soft-charcoal/50 rounded-xl mb-4"></div>
+                <div className="h-8 bg-soft-charcoal/50 rounded mb-2"></div>
+                <div className="h-4 bg-soft-charcoal/50 rounded"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  if (error && !apiStats) {
+    return (
+      <section ref={ref} className="relative py-20 px-4 z-10">
+        <div className="max-w-6xl mx-auto text-center">
+          <div className="bg-red-500/20 border border-red-500/30 rounded-2xl p-6">
+            <p className="text-red-400">⚠️ {error}</p>
+            <button
+              onClick={fetchStats}
+              className="mt-4 px-4 py-2 bg-red-500/30 hover:bg-red-500/40 rounded-lg transition-colors"
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
   return (
     <section ref={ref} className="relative py-20 px-4 z-10">
@@ -165,7 +236,6 @@ const LiveStats = () => {
             />
           ))}
         </div>
-
       </div>
     </section>
   )

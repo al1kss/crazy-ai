@@ -1,8 +1,23 @@
+import {useCallback, useEffect, useState} from "react";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://al1kss-safetyai.hf.space'
 
 export interface ApiResponse<T> {
   data?: T
   error?: string
+}
+
+export interface SystemStats {
+  total_users: number
+  total_ais: number
+  total_messages: number
+  lines_of_code_generated: number
+  last_updated: string
+}
+
+export interface StatsUpdateRequest {
+  stat_type: 'users' | 'ais' | 'messages' | 'characters'
+  increment?: number
 }
 
 export interface User {
@@ -233,6 +248,56 @@ class ApiClient {
     return this.handleResponse<FileUploadResponse[]>(response)
   }
 
+  async getSystemStats(): Promise<SystemStats> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/stats`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch stats: ${response.status}`)
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error('Error fetching system stats:', error)
+      throw error
+    }
+  }
+
+  async updateSystemStats(request: StatsUpdateRequest): Promise<{ message: string; status: string }> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/stats/update`, {
+        method: 'POST',
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify(request),
+      })
+
+      if (!response.ok) {
+        throw new Error(`Failed to update stats: ${response.status}`)
+      }
+
+      return await response.json()
+    } catch (error) {
+      console.error('Error updating system stats:', error)
+      throw error
+    }
+  }
+
+  async incrementStat(statType: 'users' | 'ais' | 'messages' | 'characters', increment: number = 1): Promise<void> {
+    try {
+      await this.updateSystemStats({
+        stat_type: statType,
+        increment
+      })
+    } catch (error) {
+      console.warn('Failed to increment stat:', statType, error)
+    }
+  }
+
   // authentication
   async register(email: string, name: string, password: string): Promise<AuthResponse> {
     return this.post('/auth/register', { email, name, password })
@@ -359,6 +424,46 @@ class ApiClient {
   async ask(question: string, mode: string = 'hybrid'): Promise<ChatResponse> {
     return this.post('/ask', { question, mode })
   }
+}
+
+export const countCharacters = (text: string): number => {
+  return text ? text.length : 0
+}
+
+export const formatStatNumber = (num: number): string => {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M'
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'K'
+  }
+  return num.toString()
+}
+
+export const useRealTimeStats = (intervalMs: number = 20000) => {
+  const [stats, setStats] = useState<SystemStats | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchStats = useCallback(async () => {
+    try {
+      const data = await apiClient.getSystemStats()
+      setStats(data)
+      setError(null)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch stats')
+      console.error('Stats fetch error:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchStats()
+    const interval = setInterval(fetchStats, intervalMs)
+    return () => clearInterval(interval)
+  }, [fetchStats, intervalMs])
+
+  return { stats, isLoading, error, refetch: fetchStats }
 }
 
 export const checkApiHealth = async (): Promise<boolean> => {
