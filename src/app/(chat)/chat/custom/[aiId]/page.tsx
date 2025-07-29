@@ -38,24 +38,26 @@ export default function CustomAIChatPage() {
     console.log('user:', user)
     
     if (!isAuthenticated) {
-      console.log('❌ Not authenticated, redirecting to /chat/custom')
+      console.log('Not authenticated, redirecting to /chat/custom')
       router.push('/chat/custom')
       return
     }
 
-    console.log('✅ Authenticated, loading custom AI...')
+    console.log('Authenticated, loading custom AI...')
     loadCustomAI()
   }, [isAuthenticated, aiId, user])
 
   const loadCustomAI = async () => {
     try {
-      console.log('🚀 Starting loadCustomAI for aiId:', aiId)
       setIsLoading(true)
+      console.log('Starting loadCustomAI for aiId:', aiId)
+      console.log('User authenticated:', isAuthenticated)
+      console.log('Current user:', user)
 
       // Get custom AI details
-      console.log('📡 Calling apiClient.getCustomAIDetails...')
+      console.log('Calling apiClient.getCustomAIDetails...')
       const response = await apiClient.getCustomAIDetails(aiId)
-      console.log('✅ API response received:', response)
+      console.log('✅ API Response received:', response)
 
       const aiDetails: CustomAI = {
         id: response.id,
@@ -68,23 +70,27 @@ export default function CustomAIChatPage() {
         file_count: response.file_count
       }
 
-      console.log('✅ Setting customAI and isOwner to true')
       setCustomAI(aiDetails)
-      setIsOwner(true)
+
+      if (user && aiDetails.user_id === user.id) {
+        setIsOwner(true)
+      } else {
+        setError('This AI belongs to another user. Redirecting...')
+      }
 
     } catch (error: any) {
-      console.error('❌ Failed to load custom AI:', error)
+      console.error('Failed to load custom AI:', error)
       if (error.message.includes('404') || error.message.includes('not found')) {
         setError('Custom AI not found')
         setTimeout(() => {
-          console.log('⏰ Redirecting to /chat/custom due to 404')
-          router.push('/chat/custom')
+          //router.push('/chat/custom')
+          console.log('Redirecting to /chat/custom after 2 seconds')
         }, 2000)
       } else {
-        setError('Failed to load AI details')
+        setError(`Failed to load AI details: ${error.message}`)
       }
     } finally {
-      console.log('🏁 loadCustomAI finished, setting isLoading to false')
+      console.log('loadCustomAI finished, setting isLoading to false')
       setIsLoading(false)
     }
   }
@@ -108,7 +114,7 @@ export default function CustomAIChatPage() {
     )
   }
 
-  if (error || !customAI || !isOwner) {
+  if (error && !isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-bg-primary via-bg-secondary to-bg-primary flex items-center justify-center">
         <motion.div
@@ -117,21 +123,39 @@ export default function CustomAIChatPage() {
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            {error.includes('not found') ? (
-              <AlertCircle className="w-10 h-10 text-red-400" />
-            ) : (
-              <Lock className="w-10 h-10 text-red-400" />
-            )}
+            <AlertCircle className="w-10 h-10 text-red-400" />
           </div>
+          <h2 className="text-2xl font-bold text-soft-cream mb-4">Error</h2>
+          <p className="text-soft-warmGray mb-8">{error}</p>
+          <motion.button
+            onClick={handleBackToList}
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-neon-pink to-neon-blue text-soft-cream px-6 py-3 rounded-xl font-medium hover:shadow-lg hover:shadow-neon-pink/25 transition-all duration-200"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back to Custom AIs
+          </motion.button>
+        </motion.div>
+      </div>
+    )
+  }
 
-          <h2 className="text-2xl font-bold text-soft-cream mb-4">
-            {error.includes('not found') ? 'AI Not Found' : 'Access Denied'}
-          </h2>
-
+  if (!isLoading && (!customAI || !isOwner)) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-bg-primary via-bg-secondary to-bg-primary flex items-center justify-center">
+        <motion.div
+          className="max-w-md mx-auto text-center p-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Lock className="w-10 h-10 text-red-400" />
+          </div>
+          <h2 className="text-2xl font-bold text-soft-cream mb-4">Access Denied</h2>
           <p className="text-soft-warmGray mb-8">
-            {error || 'You can only access AI assistants that you created.'}
+            You can only access AI assistants that you created.
           </p>
-
           <motion.button
             onClick={handleBackToList}
             className="inline-flex items-center gap-2 bg-gradient-to-r from-neon-pink to-neon-blue text-soft-cream px-6 py-3 rounded-xl font-medium hover:shadow-lg hover:shadow-neon-pink/25 transition-all duration-200"
@@ -150,7 +174,6 @@ export default function CustomAIChatPage() {
     <div className="h-screen flex flex-col">
       <div className="bg-bg-secondary/90 border-b border-neon-pink/20 p-4 flex items-center gap-4">
         <button
-          onClick={handleBackToList}
           className="p-2 hover:bg-neon-blue/20 rounded-lg transition-colors"
         >
           <ArrowLeft className="w-5 h-5 text-neon-blue" />
@@ -158,17 +181,17 @@ export default function CustomAIChatPage() {
 
         <div className="flex-1">
           <h1 className="text-xl font-bold text-soft-cream">
-            {customAI.name}
+            {customAI && customAI.name}
           </h1>
-          {customAI.description && (
+          {customAI && customAI.description && (
             <p className="text-sm text-soft-warmGray truncate max-w-2xl">
-              {customAI.description}
+              {customAI && customAI.description}:
             </p>
           )}
         </div>
 
         <div className="text-xs text-soft-warmGray">
-          {customAI.files_count} files • Created {new Date(customAI.created_at).toLocaleDateString()}
+          {customAI ? `${customAI.files_count} files • Created ${new Date(customAI.created_at).toLocaleDateString()}` : 'No data available'}
         </div>
       </div>
 

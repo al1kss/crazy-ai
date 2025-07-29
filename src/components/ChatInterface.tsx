@@ -52,7 +52,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ aiType, aiId }) => {
   const router = useRouter()
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
-  // State management
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false)
@@ -110,19 +109,24 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ aiType, aiId }) => {
 
   const currentAI = aiModels.find(model => model.id === aiType)
 
-  // Load conversations on load
   useEffect(() => {
     if (isAuthenticated) {
-      loadConversations()
+      if (aiType === 'custom') {
+        console.log('📝 Skipping immediate conversation loading for custom AI')
+        setIsLoadingConversations(false)
+        setTimeout(() => {
+          loadConversations()
+        }, 1000)
+      } else {
+        loadConversations()
+      }
     }
   }, [isAuthenticated])
 
-  // autoscroll to bottom of messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  // Close user dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -146,19 +150,42 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ aiType, aiId }) => {
   const loadConversations = async () => {
     try {
       setIsLoadingConversations(true)
-      const response = await apiClient.getConversations()
+      console.log('🔄 Loading conversations for:', { aiType, aiId })
 
-      const filteredConversations = response.conversations.filter((conv: Conversation) =>
-        conv.ai_type === aiType && (!aiId || conv.ai_id === aiId)
-      )
+      const response = await apiClient.getConversations()
+      console.log('📋 Raw conversations response:', response)
+
+      // FIXED: Handle custom AI conversations properly
+      let filteredConversations = response.conversations.filter((conv: Conversation) => {
+        if (aiType === 'custom') {
+          // For custom AI, match both ai_type and ai_id
+          return conv.ai_type === 'custom' && conv.ai_id === aiId
+        } else {
+          // For other AI types, just match ai_type
+          return conv.ai_type === aiType
+        }
+      })
+
+      console.log('📋 Filtered conversations:', filteredConversations)
       setConversations(filteredConversations)
 
-      if (filteredConversations.length > 0 && !currentConversation) {
+      // REMOVED: Don't auto-load first conversation for custom AI initially
+      // This prevents API calls that might fail
+      if (filteredConversations.length > 0 && !currentConversation && aiType !== 'custom') {
         await loadConversation(filteredConversations[0].id)
       }
-    } catch (error) {
-      console.error('Failed to load conversations:', error)
+    } catch (error: any) {
+      console.error('❌ Failed to load conversations:', error)
+      console.error('❌ Error details:', error.message, error.stack)
+
+      // CRITICAL: Don't let conversation loading errors kill the entire interface
       setConversations([])
+
+      // PREVENT AUTH ERRORS FROM CONVERSATIONS FROM CAUSING LOGOUT
+      if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
+        console.warn('⚠️ Conversation loading failed due to auth, but continuing...')
+        // Don't rethrow - just log and continue
+      }
     } finally {
       setIsLoadingConversations(false)
     }
@@ -265,7 +292,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ aiType, aiId }) => {
     router.push(`/chat/${model.id}`)
   }
 
-  // Handle key press in input
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
@@ -275,7 +301,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ aiType, aiId }) => {
 
   return (
     <div className="flex h-screen bg-[#262624] text-[#FAF9F5] overflow-hidden">
-      {/* Mobile Sidebar Overlay */}
       {isMobileSidebarOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
@@ -326,7 +351,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ aiType, aiId }) => {
           </button>
         </div>
 
-        {/* New Chat Button */}
         <div className="mb-1 h-5 px-2 flex flex-col align-center">
           <div data-state="closed">
             <a
