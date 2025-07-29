@@ -192,7 +192,7 @@ const LiveStats = () => {
       <section ref={ref} className="relative py-20 px-4 z-10">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {Array.from({ length: 4 }).map((_, i) => (
+            {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="bg-bg-tertiary/30 backdrop-blur-md border border-soft-charcoal/30 rounded-2xl p-6 animate-pulse">
                 <div className="w-12 h-12 bg-soft-charcoal/50 rounded-xl mb-4"></div>
                 <div className="h-8 bg-soft-charcoal/50 rounded mb-2"></div>
