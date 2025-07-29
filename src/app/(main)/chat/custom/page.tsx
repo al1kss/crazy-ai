@@ -251,7 +251,7 @@ export default function CustomChatPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   whileHover={{ scale: 1.02, y: -5 }}
-                  onClick={() => setSelectedAI(ai.id)}
+                  onClick={() => router.push(`/chat/custom/${ai.id}`)}
                 >
                   <motion.div
                     className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
